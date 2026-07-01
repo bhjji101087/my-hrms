@@ -5,7 +5,7 @@ namespace HRMS.SharedKernel;
 /// </summary>
 public class Result
 {
-    protected Result(bool isSuccess, Error? error)
+    protected Result(bool isSuccess, ResultError? error)
     {
         if (isSuccess && error is not null)
             throw new InvalidOperationException("A successful result cannot carry an error.");
@@ -18,13 +18,13 @@ public class Result
 
     public bool IsSuccess { get; }
     public bool IsFailure => !IsSuccess;
-    public Error? Error { get; }
+    public ResultError? Error { get; }
 
     public static Result Success() => new(true, null);
-    public static Result Failure(Error error) => new(false, error);
+    public static Result Failure(ResultError error) => new(false, error);
 
     public static Result<TValue> Success<TValue>(TValue value) => new(value, true, null);
-    public static Result<TValue> Failure<TValue>(Error error) => new(default, false, error);
+    public static Result<TValue> Failure<TValue>(ResultError error) => new(default, false, error);
 }
 
 /// <summary>Result carrying a value on success.</summary>
@@ -32,7 +32,7 @@ public sealed class Result<TValue> : Result
 {
     private readonly TValue? _value;
 
-    internal Result(TValue? value, bool isSuccess, Error? error)
+    internal Result(TValue? value, bool isSuccess, ResultError? error)
         : base(isSuccess, error) => _value = value;
 
     public TValue Value => IsSuccess
@@ -41,7 +41,7 @@ public sealed class Result<TValue> : Result
 }
 
 /// <summary>A machine-readable error code plus a human-readable message.</summary>
-public sealed record Error(string Code, string Message)
+public sealed record ResultError(string Code, string Message)
 {
-    public static readonly Error None = new(string.Empty, string.Empty);
+    public static readonly ResultError None = new(string.Empty, string.Empty);
 }
