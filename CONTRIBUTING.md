@@ -16,11 +16,21 @@
 
 ## Branching & PRs
 
-- `main` is protected. **No direct commits to `main`.**
-- Branch naming: `feature/<issue#>-short-desc`, `fix/<issue#>-...`, `chore/...`.
-- Open a Pull Request; it must pass CI (build + tests + architecture-boundary tests) and
-  receive at least one approval before merge.
-- Reference the GitHub issue the PR closes (`Closes #123`).
+See the canonical rules in
+[`docs/20-standards/BRANCHING_AND_COMMIT_RULES.md`](docs/20-standards/BRANCHING_AND_COMMIT_RULES.md).
+Summary:
+
+- `main` is protected. **No direct commits to `main`.** It receives merges only from
+  `development` via PR, **after each Feature is completed**.
+- All work branches off **`development`**, one branch per User Story.
+- Branch naming: `feat/dev-bl-<issue#>-<us_description>` — issue number un-padded,
+  description lowercase with words separated by `_`
+  (e.g. `feat/dev-bl-15-tenant_resolver_from_jwt_host`).
+- **One commit = one User Story** — US branches are **squash-merged** into `development`.
+- Open a Pull Request into `development`; it must pass CI (build + tests + architecture
+  tests) and receive the required approval before merge. Reference the story
+  (`Closes #<issue#>`).
+- A story's tasks are ticked **only after** its PR is merged into `development`.
 
 ## Module boundaries (Modular Monolith)
 

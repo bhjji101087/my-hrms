@@ -201,6 +201,17 @@ End Goal: a world-class enterprise HRMS platform.
 @.ai/ARCHITECTURE_PRINCIPLES.md
 @.ai/PROJECT_STATE.md
 
+## Mandatory development workflow rules (always in effect — never wait to be reminded)
+
+All code work follows `docs/20-standards/BRANCHING_AND_COMMIT_RULES.md`:
+* Branch per User Story off `development`, named `feat/dev-bl-<issue#>-<us_description>`
+  (issue number un-padded; description lowercase, words separated by `_`).
+* One commit = one User Story (squash-merge each US branch into `development`).
+* A US's tasks are ticked only after its PR is merged into `development`; PR links the US
+  (`Closes #<issue#>`).
+* `development` is promoted to `main` via PR after each Feature is completed.
+* Local SQL Server is used for the database; Docker runs RabbitMQ, Redis, and Qdrant only.
+
 ## Read-on-demand standards (do NOT preload — read the relevant one when the task touches that area)
 
 * Backend / .NET → `docs/20-standards/CODING_STANDARDS_DOTNET.md`
