@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="540" viewBox="0 0 900 540" font-family="Segoe UI, Arial, sans-serif">
+  <rect width="900" height="540" fill="#f8fafc"/>
+  <rect x="0" y="0" width="900" height="52" fill="#1e3a5f"/>
+  <circle cx="28" cy="26" r="11" fill="#4f8cff"/><text x="46" y="31" fill="#fff" font-size="14" font-weight="700">HRMS</text>
+  <text x="790" y="31" fill="#cfe0f5" font-size="11">🔔 3   Rohan ▾</text>
+  <text x="40" y="92" fill="#0f172a" font-size="19" font-weight="700">Approvals</text>
+  <rect x="168" y="76" width="74" height="22" rx="11" fill="#fee2e2"/><text x="180" y="91" fill="#b91c1c" font-size="11" font-weight="700">3 pending</text>
+  <!-- acting-as -->
+  <rect x="690" y="76" width="170" height="26" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="704" y="93" fill="#475569" font-size="11">acting as: Me ▾ / Delegate</text>
+  <!-- card 1 -->
+  <rect x="40" y="120" width="820" height="110" rx="10" fill="#ffffff" stroke="#e2e8f0"/>
+  <text x="62" y="148" fill="#0f172a" font-size="14" font-weight="700">⏳ Leave · Anita R · Sick 3 days (16–18 Jun)</text>
+  <rect x="690" y="132" width="80" height="22" rx="11" fill="#dcfce7"/><text x="702" y="147" fill="#166534" font-size="11">SLA: 6h</text>
+  <text x="62" y="172" fill="#475569" font-size="12">Balance OK · Step 1/2 (you) → HR · Reason: fever</text>
+  <rect x="62" y="186" width="430" height="30" rx="6" fill="#f8fafc" stroke="#cbd5e1"/><text x="74" y="206" fill="#94a3b8" font-size="12">comment…</text>
+  <rect x="606" y="186" width="110" height="32" rx="6" fill="#16a34a"/><text x="661" y="207" fill="#fff" font-size="12" font-weight="600" text-anchor="middle">Approve</text>
+  <rect x="730" y="186" width="108" height="32" rx="6" fill="#ffffff" stroke="#ef4444"/><text x="784" y="207" fill="#ef4444" font-size="12" font-weight="600" text-anchor="middle">Reject</text>
+  <!-- card 2 -->
+  <rect x="40" y="244" width="820" height="92" rx="10" fill="#ffffff" stroke="#e2e8f0"/>
+  <text x="62" y="272" fill="#0f172a" font-size="14" font-weight="700">⏳ Attendance Regularization · Vikram S · 12 Jun</text>
+  <rect x="690" y="256" width="86" height="22" rx="11" fill="#fee2e2"/><text x="702" y="271" fill="#b91c1c" font-size="11">SLA: ⚠ 1h</text>
+  <text x="62" y="296" fill="#475569" font-size="12">Missed punch-out · Step 1/1 (you)</text>
+  <rect x="606" y="296" width="110" height="32" rx="6" fill="#16a34a"/><text x="661" y="317" fill="#fff" font-size="12" font-weight="600" text-anchor="middle">Approve</text>
+  <rect x="730" y="296" width="108" height="32" rx="6" fill="#ffffff" stroke="#ef4444"/><text x="784" y="317" fill="#ef4444" font-size="12" font-weight="600" text-anchor="middle">Reject</text>
+  <!-- card 3 collapsed -->
+  <rect x="40" y="350" width="820" height="56" rx="10" fill="#ffffff" stroke="#e2e8f0"/>
+  <text x="62" y="383" fill="#0f172a" font-size="14" font-weight="700">⏳ Expense · Meera J · ₹4,200</text>
+  <rect x="690" y="366" width="80" height="22" rx="11" fill="#dcfce7"/><text x="702" y="381" fill="#166534" font-size="11">SLA: 2d</text>
+  <text x="804" y="383" fill="#64748b" font-size="16" text-anchor="end">▾</text>
+  <!-- bulk + audit note -->
+  <rect x="40" y="426" width="160" height="30" rx="6" fill="#ffffff" stroke="#cbd5e1"/><text x="120" y="446" fill="#334155" font-size="11" text-anchor="middle">☑ Approve selected</text>
+  <text x="40" y="486" fill="#94a3b8" font-size="11">Delegate actions are recorded as "OnBehalfOf" in the audit trail · SLA breach → escalation (config)</text>
+  <text x="40" y="510" fill="#94a3b8" font-size="10">Screen 4 — Approvals Inbox (cross-module, delegation + SLA)</text>
+</svg>

@@ -1,0 +1,21 @@
+# Normalize line endings: repo stores LF, checkout native on Windows.
+* text=auto
+
+# Explicitly text
+*.md      text
+*.cs      text diff=csharp
+*.csproj  text
+*.sln     text eol=crlf
+*.json    text
+*.yml     text
+*.yaml    text
+*.svg     text
+*.html    text
+*.py      text
+
+# Binary — never normalize
+*.pdf     binary
+*.pptx    binary
+*.png     binary
+*.jpg     binary
+*.zip     binary

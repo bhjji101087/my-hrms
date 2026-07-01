@@ -1,0 +1,286 @@
+{"kind":"deck","id":"pr/p4k7r2","name":"Deck"}
+{"kind":"layout","layoutId":"75108507-05d8-48e3-a3ad-f88a940aaca3","name":"Master","type":"master"}
+{"kind":"layout","layoutId":"45a89dce-9bb5-4a6c-ba33-113e7374ac5a","name":"Title Slide","type":"title"}
+{"kind":"slide","id":"sl/4n74r6","slide":1,"title":"PHASE 7A","textShapes":7}
+{"kind":"shape","id":"sh/t83itgfm","slide":1,"bbox":[0,0,1280,720]}
+{"kind":"textbox","id":"sh/mhk3q5o7","slide":1,"text":"PHASE 7A","textPreview":"PHASE 7A","textChars":8,"textLines":1,"bbox":[70,72,360,34]}
+{"kind":"textbox","id":"sh/b2hwfyxo","slide":1,"text":"Approved Development Plan","textPreview":"Approved Development Plan","textChars":25,"textLines":1,"bbox":[70,122,550,126]}
+{"kind":"textbox","id":"sh/4byhgn29","slide":1,"text":"What we approved, what will be built, who it serves, and how the HRMS foundation will work.","textPreview":"What we approved, what will be built, who it serves, and how the HRMS foundation will work.","textChars":91,"textLines":1,"bbox":[72,278,520,84]}
+{"kind":"shape","id":"sh/twra5gbq","slide":1,"bbox":[72,432,220,118]}
+{"kind":"textbox","id":"sh/m58z25kb","slide":1,"text":"60/60","textPreview":"60/60","textChars":5,"textLines":1,"bbox":[94,450,176,44]}
+{"kind":"textbox","id":"sh/bq1oryts","slide":1,"text":"Phase 7A documents approved","textPreview":"Phase 7A documents approved","textChars":27,"textLines":1,"bbox":[94,500,176,34]}
+{"kind":"shape","id":"sh/47y1kre1","slide":1,"bbox":[316,432,220,118]}
+{"kind":"textbox","id":"sh/tsvu9kni","slide":1,"text":"11","textPreview":"11","textChars":2,"textLines":1,"bbox":[338,450,176,44]}
+{"kind":"textbox","id":"sh/90je9cvi","slide":1,"text":"business and foundation modules","textPreview":"business and foundation modules","textChars":31,"textLines":1,"bbox":[338,500,176,34]}
+{"kind":"image","id":"im/7adsji5s","slide":1,"name":"","geometry":"roundRect","alt":"Team collaboration visual from Wikimedia Commons","bbox":[682,0,598,720]}
+{"kind":"notes","id":"nt/4n74r6","slide":1,"text":""}
+{"kind":"slide","id":"sl/qu1jod","slide":2,"title":"The Approved Conclusion","textShapes":12}
+{"kind":"textbox","id":"sh/4nap4r65","slide":2,"text":"The Approved Conclusion","textPreview":"The Approved Conclusion","textChars":23,"textLines":1,"bbox":[64,42,900,58]}
+{"kind":"textbox","id":"sh/b2hwfyxo","slide":2,"text":"Phase 7A is the first complete working foundation of the HRMS platform.","textPreview":"Phase 7A is the first complete working foundation of the HRMS platform.","textChars":71,"textLines":1,"bbox":[64,104,940,44]}
+{"kind":"shape","id":"sh/mhk3q5o7","slide":2,"bbox":[82,188,300,118]}
+{"kind":"textbox","id":"sh/twra5gbq","slide":2,"text":"55","textPreview":"55","textChars":2,"textLines":1,"bbox":[104,206,256,44]}
+{"kind":"textbox","id":"sh/4byhgn29","slide":2,"text":"implementation documents approved","textPreview":"implementation documents approved","textChars":33,"textLines":1,"bbox":[104,256,256,34]}
+{"kind":"shape","id":"sh/bq1oryts","slide":2,"bbox":[422,188,300,118]}
+{"kind":"textbox","id":"sh/m58z25kb","slide":2,"text":"5","textPreview":"5","textChars":1,"textLines":1,"bbox":[444,206,256,44]}
+{"kind":"textbox","id":"sh/tsvu9kni","slide":2,"text":"hardening and backlog documents approved","textPreview":"hardening and backlog documents approved","textChars":40,"textLines":1,"bbox":[444,256,256,34]}
+{"kind":"shape","id":"sh/47y1kre1","slide":2,"bbox":[762,188,380,118]}
+{"kind":"textbox","id":"sh/adsji5sn","slide":2,"text":"Ready","textPreview":"Ready","textChars":5,"textLines":1,"bbox":[784,206,336,44]}
+{"kind":"textbox","id":"sh/3ylc7u54","slide":2,"text":"to start development in the approved order","textPreview":"to start development in the approved order","textChars":42,"textLines":1,"bbox":[784,256,336,34]}
+{"kind":"shape","id":"sh/sji5snel","slide":2,"bbox":[82,358,1060,188]}
+{"kind":"textbox","id":"sh/h4byhgn2","slide":2,"text":"Plain meaning","textPreview":"Plain meaning","textChars":13,"textLines":1,"bbox":[112,388,280,34]}
+{"kind":"textbox","id":"sh/a5gbq1or","slide":2,"text":"We are not building only a few HR screens. We are building the secure platform base plus the first HR operations: Core HR, Leave, Attendance, Payroll, and Reports. The design is configuration-led, tenant-safe, audited, and ready for future modules without changing the core.","textPreview":"We are not building only a few HR screens. We are building the secure platform base plus the first HR operations: Core HR, Leave, Attenda...","textChars":274,"textLines":1,"bbox":[112,434,980,82]}
+{"kind":"textbox","id":"sh/3m94fu18","slide":2,"text":"HRMS Platform | Phase 7A Approved Development","textPreview":"HRMS Platform | Phase 7A Approved Development","textChars":45,"textLines":1,"bbox":[64,682,520,20]}
+{"kind":"textbox","id":"sh/s72x4nap","slide":2,"text":"02","textPreview":"02","textChars":2,"textLines":1,"bbox":[1160,682,56,20]}
+{"kind":"notes","id":"nt/qu1jod","slide":2,"text":""}
+{"kind":"slide","id":"sl/v8qdjd","slide":3,"title":"Who Phase 7A Is For","textShapes":16}
+{"kind":"textbox","id":"sh/hgn29gr2","slide":3,"text":"Who Phase 7A Is For","textPreview":"Who Phase 7A Is For","textChars":19,"textLines":1,"bbox":[64,42,900,58]}
+{"kind":"textbox","id":"sh/ap4r65wj","slide":3,"text":"The same foundation supports daily users, administrators, payroll teams, and auditors.","textPreview":"The same foundation supports daily users, administrators, payroll teams, and auditors.","textChars":86,"textLines":1,"bbox":[64,104,940,44]}
+{"kind":"shape","id":"sh/za1gvy90","slide":3,"bbox":[74,170,545,110]}
+{"kind":"shape","id":"sh/s36hcrmh","slide":3,"bbox":[74,170,8,110]}
+{"kind":"textbox","id":"sh/hoza1gvy","slide":3,"text":"Employees","textPreview":"Employees","textChars":9,"textLines":1,"bbox":[96,188,507,26]}
+{"kind":"textbox","id":"sh/a1gvy90j","slide":3,"text":"Use self-service for profile updates, leave, attendance, payslips, and requests.","textPreview":"Use self-service for profile updates, leave, attendance, payslips, and requests.","textChars":80,"textLines":1,"bbox":[96,220,507,48]}
+{"kind":"shape","id":"sh/zidonyd0","slide":3,"bbox":[659,170,545,110]}
+{"kind":"shape","id":"sh/s72x4nap","slide":3,"bbox":[659,170,8,110]}
+{"kind":"textbox","id":"sh/lszqtcj6","slide":3,"text":"Managers","textPreview":"Managers","textChars":8,"textLines":1,"bbox":[681,188,507,26]}
+{"kind":"textbox","id":"sh/h0fepkzu","slide":3,"text":"Approve leave and attendance changes, view team information, and track pending work.","textPreview":"Approve leave and attendance changes, view team information, and track pending work.","textChars":84,"textLines":1,"bbox":[681,220,507,48]}
+{"kind":"shape","id":"sh/sfil0rqd","slide":3,"bbox":[74,310,545,110]}
+{"kind":"shape","id":"sh/zupwb2hw","slide":3,"bbox":[74,310,8,110]}
+{"kind":"textbox","id":"sh/a9w3m94f","slide":3,"text":"HR Admins","textPreview":"HR Admins","textChars":9,"textLines":1,"bbox":[96,328,507,26]}
+{"kind":"textbox","id":"sh/hcrmhk3q","slide":3,"text":"Manage employees, policies, workflows, calendars, reports, and HR operations.","textPreview":"Manage employees, policies, workflows, calendars, reports, and HR operations.","textChars":77,"textLines":1,"bbox":[96,360,507,48]}
+{"kind":"shape","id":"sh/orytsvu9","slide":3,"bbox":[659,310,545,110]}
+{"kind":"shape","id":"sh/z61032ls","slide":3,"bbox":[659,310,8,110]}
+{"kind":"textbox","id":"sh/al87ed8b","slide":3,"text":"Payroll Teams","textPreview":"Payroll Teams","textChars":13,"textLines":1,"bbox":[681,328,507,26]}
+{"kind":"textbox","id":"sh/hk3q5o7q","slide":3,"text":"Run payroll, review exceptions, approve results, publish payslips, and handle compliance.","textPreview":"Run payroll, review exceptions, approve results, publish payslips, and handle compliance.","textChars":89,"textLines":1,"bbox":[681,360,507,48]}
+{"kind":"shape","id":"sh/oza1gvy9","slide":3,"bbox":[74,450,545,110]}
+{"kind":"shape","id":"sh/kf6dcbul","slide":3,"bbox":[74,450,8,110]}
+{"kind":"textbox","id":"sh/d0z61032","slide":3,"text":"Tenant Admins","textPreview":"Tenant Admins","textChars":13,"textLines":1,"bbox":[96,468,507,26]}
+{"kind":"textbox","id":"sh/29gr2p8n","slide":3,"text":"Control tenant configuration, security, feature flags, branding, and approvals.","textPreview":"Control tenant configuration, security, feature flags, branding, and approvals.","textChars":79,"textLines":1,"bbox":[96,500,507,48]}
+{"kind":"shape","id":"sh/vu9knih4","slide":3,"bbox":[659,450,545,110]}
+{"kind":"shape","id":"sh/knih4byh","slide":3,"bbox":[659,450,8,110]}
+{"kind":"textbox","id":"sh/d8bat47y","slide":3,"text":"Auditors and Security","textPreview":"Auditors and Security","textChars":21,"textLines":1,"bbox":[681,468,507,26]}
+{"kind":"textbox","id":"sh/2lszqtcj","slide":3,"text":"Review audit history, time-machine evidence, access controls, and exports.","textPreview":"Review audit history, time-machine evidence, access controls, and exports.","textChars":74,"textLines":1,"bbox":[681,500,507,48]}
+{"kind":"textbox","id":"sh/v6psfil0","slide":3,"text":"HRMS Platform | Phase 7A Approved Development","textPreview":"HRMS Platform | Phase 7A Approved Development","textChars":45,"textLines":1,"bbox":[64,682,520,20]}
+{"kind":"textbox","id":"sh/kre1w7mp","slide":3,"text":"03","textPreview":"03","textChars":2,"textLines":1,"bbox":[1160,682,56,20]}
+{"kind":"notes","id":"nt/v8qdjd","slide":3,"text":""}
+{"kind":"slide","id":"sl/ezw0ad","slide":4,"title":"What We Are Going To Develop","textShapes":13}
+{"kind":"textbox","id":"sh/lszqtcj6","slide":4,"text":"What We Are Going To Develop","textPreview":"What We Are Going To Develop","textChars":28,"textLines":1,"bbox":[64,42,900,58]}
+{"kind":"textbox","id":"sh/a5gbq1or","slide":4,"text":"The approved scope is split into platform foundations and business modules.","textPreview":"The approved scope is split into platform foundations and business modules.","textChars":75,"textLines":1,"bbox":[64,104,940,44]}
+{"kind":"shape","id":"sh/3m94fu18","slide":4,"bbox":[74,172,535,148]}
+{"kind":"textbox","id":"sh/sji5snel","slide":4,"text":"Secure SaaS foundation","textPreview":"Secure SaaS foundation","textChars":22,"textLines":1,"bbox":[92,188,499,28]}
+{"kind":"textbox","id":"sh/h4byhgn2","slide":4,"text":"Tenant catalog, tenant context, row-level security, identity, RBAC, ABAC, sessions, feature flags, and audit.","textPreview":"Tenant catalog, tenant context, row-level security, identity, RBAC, ABAC, sessions, feature flags, and audit.","textChars":109,"textLines":1,"bbox":[92,222,499,86]}
+{"kind":"shape","id":"sh/adsji5sn","slide":4,"bbox":[671,172,535,148]}
+{"kind":"textbox","id":"sh/3ylc7u54","slide":4,"text":"Configurable HR operations","textPreview":"Configurable HR operations","textChars":26,"textLines":1,"bbox":[689,188,499,28]}
+{"kind":"textbox","id":"sh/svu9knih","slide":4,"text":"Effective dating, rule engine, workflow engine, forms/configuration-as-data, Core HR, employee self-service, and approvals.","textPreview":"Effective dating, rule engine, workflow engine, forms/configuration-as-data, Core HR, employee self-service, and approvals.","textChars":123,"textLines":1,"bbox":[689,222,499,86]}
+{"kind":"shape","id":"sh/hgn29gr2","slide":4,"bbox":[74,360,535,148]}
+{"kind":"textbox","id":"sh/tgfmlkjm","slide":4,"text":"Time, leave, and payroll","textPreview":"Time, leave, and payroll","textChars":24,"textLines":1,"bbox":[92,376,499,28]}
+{"kind":"textbox","id":"sh/4vmtwra5","slide":4,"text":"Leave policies, attendance capture, first connector framework, payroll calculation, payslips, and India compliance foundation.","textPreview":"Leave policies, attendance capture, first connector framework, payroll calculation, payslips, and India compliance foundation.","textChars":126,"textLines":1,"bbox":[92,410,499,86]}
+{"kind":"shape","id":"sh/bat47y1k","slide":4,"bbox":[671,360,535,148]}
+{"kind":"textbox","id":"sh/mp0bi9s3","slide":4,"text":"Reports and release controls","textPreview":"Reports and release controls","textChars":28,"textLines":1,"bbox":[689,376,499,28]}
+{"kind":"textbox","id":"sh/tsvu9kni","slide":4,"text":"Standard reports, secure exports, operational dashboards, test coverage, OpenAPI, performance, and release readiness.","textPreview":"Standard reports, secure exports, operational dashboards, test coverage, OpenAPI, performance, and release readiness.","textChars":117,"textLines":1,"bbox":[689,410,499,86]}
+{"kind":"shape","id":"sh/47y1kre1","slide":4,"bbox":[74,556,1132,58]}
+{"kind":"textbox","id":"sh/bm58z25k","slide":4,"text":"Important rule: Phase 7A is delivered in order. Later modules do not start before their required foundation is completed.","textPreview":"Important rule: Phase 7A is delivered in order. Later modules do not start before their required foundation is completed.","textChars":121,"textLines":1,"bbox":[104,572,1068,28]}
+{"kind":"textbox","id":"sh/m1cfa9w3","slide":4,"text":"HRMS Platform | Phase 7A Approved Development","textPreview":"HRMS Platform | Phase 7A Approved Development","textChars":45,"textLines":1,"bbox":[64,682,520,20]}
+{"kind":"textbox","id":"sh/twra5gbq","slide":4,"text":"04","textPreview":"04","textChars":2,"textLines":1,"bbox":[1160,682,56,20]}
+{"kind":"notes","id":"nt/ezw0ad","slide":4,"text":""}
+{"kind":"slide","id":"sl/v3tgyf","slide":5,"title":"How Users Will Operate It","textShapes":23}
+{"kind":"textbox","id":"sh/t83itgfm","slide":5,"text":"How Users Will Operate It","textPreview":"How Users Will Operate It","textChars":25,"textLines":1,"bbox":[64,42,900,58]}
+{"kind":"textbox","id":"sh/mhk3q5o7","slide":5,"text":"The product flow is designed to be understandable for business users and enforceable for technical teams.","textPreview":"The product flow is designed to be understandable for business users and enforceable for technical teams.","textChars":105,"textLines":1,"bbox":[64,104,940,44]}
+{"kind":"shape","id":"sh/b2hwfyxo","slide":5,"bbox":[76,170,350,120]}
+{"kind":"shape","id":"sh/4byhgn29","slide":5,"bbox":[92,188,36,36]}
+{"kind":"textbox","id":"sh/twra5gbq","slide":5,"text":"1","textPreview":"1","textChars":1,"textLines":1,"bbox":[92,193,36,22]}
+{"kind":"textbox","id":"sh/m58z25kb","slide":5,"text":"Configure","textPreview":"Configure","textChars":9,"textLines":1,"bbox":[140,188,270,30]}
+{"kind":"textbox","id":"sh/bq1oryts","slide":5,"text":"Admin sets policy, workflow, roles, calendar, and rules.","textPreview":"Admin sets policy, workflow, roles, calendar, and rules.","textChars":56,"textLines":1,"bbox":[140,222,270,50]}
+{"kind":"shape","id":"sh/47y1kre1","slide":5,"bbox":[466,170,350,120]}
+{"kind":"shape","id":"sh/tsvu9kni","slide":5,"bbox":[482,188,36,36]}
+{"kind":"textbox","id":"sh/90je9cvi","slide":5,"text":"2","textPreview":"2","textChars":1,"textLines":1,"bbox":[482,193,36,22]}
+{"kind":"textbox","id":"sh/gfmlkjm1","slide":5,"text":"Request","textPreview":"Request","textChars":7,"textLines":1,"bbox":[530,188,270,30]}
+{"kind":"textbox","id":"sh/rytsvu9k","slide":5,"text":"Employee or HR submits leave, correction, profile, or payroll action.","textPreview":"Employee or HR submits leave, correction, profile, or payroll action.","textChars":69,"textLines":1,"bbox":[530,222,270,50]}
+{"kind":"shape","id":"sh/yd0z6103","slide":5,"bbox":[856,170,350,120]}
+{"kind":"shape","id":"sh/9s36hcrm","slide":5,"bbox":[872,188,36,36]}
+{"kind":"textbox","id":"sh/g7adsji5","slide":5,"text":"3","textPreview":"3","textChars":1,"textLines":1,"bbox":[872,193,36,22]}
+{"kind":"textbox","id":"sh/rmhk3q5o","slide":5,"text":"Approve","textPreview":"Approve","textChars":7,"textLines":1,"bbox":[920,188,270,30]}
+{"kind":"textbox","id":"sh/y1kre1w7","slide":5,"text":"Workflow routes the task to the right manager or HR role.","textPreview":"Workflow routes the task to the right manager or HR role.","textChars":57,"textLines":1,"bbox":[920,222,270,50]}
+{"kind":"shape","id":"sh/5o7qpg3e","slide":5,"bbox":[76,340,350,120]}
+{"kind":"shape","id":"sh/g3ex0nux","slide":5,"bbox":[92,358,36,36]}
+{"kind":"textbox","id":"sh/cfa9w3m9","slide":5,"text":"4","textPreview":"4","textChars":1,"textLines":1,"bbox":[92,363,36,22]}
+{"kind":"textbox","id":"sh/1032lszq","slide":5,"text":"Calculate","textPreview":"Calculate","textChars":9,"textLines":1,"bbox":[140,358,270,30]}
+{"kind":"textbox","id":"sh/u9knih4b","slide":5,"text":"Rules calculate balances, attendance summaries, payroll, and exceptions.","textPreview":"Rules calculate balances, attendance summaries, payroll, and exceptions.","textChars":72,"textLines":1,"bbox":[140,392,270,50]}
+{"kind":"shape","id":"sh/judg7ads","slide":5,"bbox":[466,340,350,120]}
+{"kind":"shape","id":"sh/c7u54zid","slide":5,"bbox":[482,358,36,36]}
+{"kind":"textbox","id":"sh/1orytsvu","slide":5,"text":"5","textPreview":"5","textChars":1,"textLines":1,"bbox":[482,363,36,22]}
+{"kind":"textbox","id":"sh/u18jqh0f","slide":5,"text":"Publish","textPreview":"Publish","textChars":7,"textLines":1,"bbox":[530,358,270,30]}
+{"kind":"textbox","id":"sh/jm1cfa9w","slide":5,"text":"Approved results become visible as payslips, reports, or status updates.","textPreview":"Approved results become visible as payslips, reports, or status updates.","textChars":72,"textLines":1,"bbox":[530,392,270,50]}
+{"kind":"shape","id":"sh/cvixczed","slide":5,"bbox":[856,340,350,120]}
+{"kind":"shape","id":"sh/5gbq1ory","slide":5,"bbox":[872,358,36,36]}
+{"kind":"textbox","id":"sh/val87ed8","slide":5,"text":"6","textPreview":"6","textChars":1,"textLines":1,"bbox":[872,363,36,22]}
+{"kind":"textbox","id":"sh/6psfil0r","slide":5,"text":"Audit","textPreview":"Audit","textChars":5,"textLines":1,"bbox":[920,358,270,30]}
+{"kind":"textbox","id":"sh/dcbulwva","slide":5,"text":"Every important action remains traceable, tenant-filtered, and reportable.","textPreview":"Every important action remains traceable, tenant-filtered, and reportable.","textChars":74,"textLines":1,"bbox":[920,392,270,50]}
+{"kind":"shape","id":"sh/kre1w7mp","slide":5,"bbox":[76,542,1130,64]}
+{"kind":"textbox","id":"sh/vixczed8","slide":5,"text":"Operating principle: users see simple workflows; the platform handles security, approvals, calculations, events, history, and audit behind the scenes.","textPreview":"Operating principle: users see simple workflows; the platform handles security, approvals, calculations, events, history, and audit behin...","textChars":150,"textLines":1,"bbox":[106,560,1070,30]}
+{"kind":"textbox","id":"sh/2x4nap4r","slide":5,"text":"HRMS Platform | Phase 7A Approved Development","textPreview":"HRMS Platform | Phase 7A Approved Development","textChars":45,"textLines":1,"bbox":[64,682,520,20]}
+{"kind":"textbox","id":"sh/donyd0z6","slide":5,"text":"05","textPreview":"05","textChars":2,"textLines":1,"bbox":[1160,682,56,20]}
+{"kind":"notes","id":"nt/v3tgyf","slide":5,"text":""}
+{"kind":"slide","id":"sl/48p1zd","slide":6,"title":"Architecture In Simple Language","textShapes":7}
+{"kind":"textbox","id":"sh/9w3m94fu","slide":6,"text":"Architecture In Simple Language","textPreview":"Architecture In Simple Language","textChars":31,"textLines":1,"bbox":[64,42,900,58]}
+{"kind":"textbox","id":"sh/25kb6xkf","slide":6,"text":"A secure shared platform, where every customer is isolated and every module plugs into common services.","textPreview":"A secure shared platform, where every customer is isolated and every module plugs into common services.","textChars":103,"textLines":1,"bbox":[64,104,940,44]}
+{"kind":"textbox","id":"sh/kzupwb2h","slide":6,"text":"APPROVED ARCHITECTURE CHOICES","textPreview":"APPROVED ARCHITECTURE CHOICES","textChars":29,"textLines":1,"bbox":[76,164,420,24]}
+{"kind":"textbox","id":"sh/9knih4by","slide":6,"text":"- Multi-tenant SaaS: many customers, safely separated.\n- Security first: every API checks tenant, user, role, permission, and policy.\n- Rules-as-data: HR and payroll policies live in configuration, not hardcoded code.\n- Event-driven backbone: modules communicate through approved events.\n- Extension-ready: future modules connect through APIs, providers, manifests, and configuration.","textPreview":"- Multi-tenant SaaS: many customers, safely separated. | - Security first: every API checks tenant, user, role, permission, and policy. |...","textChars":384,"textLines":5,"bbox":[76,202,560,260]}
+{"kind":"shape","id":"sh/2t83itgf","slide":6,"bbox":[76,500,1114,78]}
+{"kind":"textbox","id":"sh/re1w7mp0","slide":6,"text":"Simple example: LeaveApproved creates an event. Payroll, notifications, and reports can react without directly changing the Leave module.","textPreview":"Simple example: LeaveApproved creates an event. Payroll, notifications, and reports can react without directly changing the Leave module.","textChars":137,"textLines":1,"bbox":[106,522,1046,34]}
+{"kind":"textbox","id":"sh/gvy90je9","slide":6,"text":"HRMS Platform | Phase 7A Approved Development","textPreview":"HRMS Platform | Phase 7A Approved Development","textChars":45,"textLines":1,"bbox":[64,682,520,20]}
+{"kind":"textbox","id":"sh/9gr2p8nq","slide":6,"text":"06","textPreview":"06","textChars":2,"textLines":1,"bbox":[1160,682,56,20]}
+{"kind":"image","id":"im/6xkf6dcb","slide":6,"name":"","geometry":"roundRect","alt":"Server infrastructure visual from Wikimedia Commons","bbox":[716,150,474,334]}
+{"kind":"notes","id":"nt/48p1zd","slide":6,"text":""}
+{"kind":"slide","id":"sl/u1nw68","slide":7,"title":"Foundations First","textShapes":17}
+{"kind":"textbox","id":"sh/7u54zido","slide":7,"text":"Foundations First","textPreview":"Foundations First","textChars":17,"textLines":1,"bbox":[64,42,900,58]}
+{"kind":"textbox","id":"sh/wfyxobm5","slide":7,"text":"These foundations are hard to add later, so Phase 7A builds them before heavy business expansion.","textPreview":"These foundations are hard to add later, so Phase 7A builds them before heavy business expansion.","textChars":97,"textLines":1,"bbox":[64,104,940,44]}
+{"kind":"shape","id":"sh/l0rqd4vm","slide":7,"bbox":[76,182,340,116]}
+{"kind":"textbox","id":"sh/eloj2t83","slide":7,"text":"Tenant Catalog + RLS","textPreview":"Tenant Catalog + RLS","textChars":20,"textLines":1,"bbox":[94,198,304,28]}
+{"kind":"textbox","id":"sh/36hcrmhk","slide":7,"text":"Customer isolation and tenant-filtered access.","textPreview":"Customer isolation and tenant-filtered access.","textChars":46,"textLines":1,"bbox":[94,232,304,54]}
+{"kind":"shape","id":"sh/wra5gbq1","slide":7,"bbox":[458,182,340,116]}
+{"kind":"textbox","id":"sh/lc7u54zi","slide":7,"text":"Effective Dating","textPreview":"Effective Dating","textChars":16,"textLines":1,"bbox":[476,198,304,28]}
+{"kind":"textbox","id":"sh/epkzupwb","slide":7,"text":"History-aware records for payroll, audit, and reporting.","textPreview":"History-aware records for payroll, audit, and reporting.","textChars":56,"textLines":1,"bbox":[476,232,304,54]}
+{"kind":"shape","id":"sh/7adsji5s","slide":7,"bbox":[840,182,340,116]}
+{"kind":"textbox","id":"sh/nqxs72x4","slide":7,"text":"Rule Engine","textPreview":"Rule Engine","textChars":11,"textLines":1,"bbox":[858,198,304,28]}
+{"kind":"textbox","id":"sh/u54zidon","slide":7,"text":"Leave, attendance, payroll, workflow, and compliance rules.","textPreview":"Leave, attendance, payroll, workflow, and compliance rules.","textChars":59,"textLines":1,"bbox":[858,232,304,54]}
+{"kind":"shape","id":"sh/5sneloj2","slide":7,"bbox":[76,336,340,116]}
+{"kind":"textbox","id":"sh/cbulwval","slide":7,"text":"Workflow Engine","textPreview":"Workflow Engine","textChars":15,"textLines":1,"bbox":[94,352,304,28]}
+{"kind":"textbox","id":"sh/neloj2t8","slide":7,"text":"Approvals, escalation, SLA, delegation, and versioning.","textPreview":"Approvals, escalation, SLA, delegation, and versioning.","textChars":55,"textLines":1,"bbox":[94,386,304,54]}
+{"kind":"shape","id":"sh/ytsvu9kn","slide":7,"bbox":[458,336,340,116]}
+{"kind":"textbox","id":"sh/5kb6xkf6","slide":7,"text":"Event Bus + Outbox","textPreview":"Event Bus + Outbox","textChars":18,"textLines":1,"bbox":[476,352,304,28]}
+{"kind":"textbox","id":"sh/czed8v6p","slide":7,"text":"Reliable module-to-module communication.","textPreview":"Reliable module-to-module communication.","textChars":40,"textLines":1,"bbox":[476,386,304,54]}
+{"kind":"shape","id":"sh/n29gr2p8","slide":7,"bbox":[840,336,340,116]}
+{"kind":"textbox","id":"sh/yhgn29gr","slide":7,"text":"Audit / Time Machine","textPreview":"Audit / Time Machine","textChars":20,"textLines":1,"bbox":[858,352,304,28]}
+{"kind":"textbox","id":"sh/6hcrmhk3","slide":7,"text":"Traceability, evidence, and change history.","textPreview":"Traceability, evidence, and change history.","textChars":43,"textLines":1,"bbox":[858,386,304,54]}
+{"kind":"shape","id":"sh/z25kb6xk","slide":7,"bbox":[136,542,1008,54]}
+{"kind":"textbox","id":"sh/onyd0z61","slide":7,"text":"Business modules sit on top of these services, so later modules can be added without rewriting the core platform.","textPreview":"Business modules sit on top of these services, so later modules can be added without rewriting the core platform.","textChars":113,"textLines":1,"bbox":[170,556,940,26]}
+{"kind":"textbox","id":"sh/d8v6psfi","slide":7,"text":"HRMS Platform | Phase 7A Approved Development","textPreview":"HRMS Platform | Phase 7A Approved Development","textChars":45,"textLines":1,"bbox":[64,682,520,20]}
+{"kind":"textbox","id":"sh/6tovahoz","slide":7,"text":"07","textPreview":"07","textChars":2,"textLines":1,"bbox":[1160,682,56,20]}
+{"kind":"notes","id":"nt/u1nw68","slide":7,"text":""}
+{"kind":"slide","id":"sl/pfntei","slide":8,"title":"Business Modules In Phase 7A","textShapes":15}
+{"kind":"textbox","id":"sh/cbulwval","slide":8,"text":"Business Modules In Phase 7A","textPreview":"Business Modules In Phase 7A","textChars":28,"textLines":1,"bbox":[64,42,900,58]}
+{"kind":"textbox","id":"sh/nqxs72x4","slide":8,"text":"These are the first usable HR operations delivered on the approved foundation.","textPreview":"These are the first usable HR operations delivered on the approved foundation.","textChars":78,"textLines":1,"bbox":[64,104,940,44]}
+{"kind":"shape","id":"sh/u54zidon","slide":8,"bbox":[76,168,350,138]}
+{"kind":"textbox","id":"sh/5kb6xkf6","slide":8,"text":"Core HR + ESS","textPreview":"Core HR + ESS","textChars":13,"textLines":1,"bbox":[94,184,314,28]}
+{"kind":"textbox","id":"sh/czed8v6p","slide":8,"text":"Employee master, assignments, organization data, profile requests, and employee self-service.","textPreview":"Employee master, assignments, organization data, profile requests, and employee self-service.","textChars":93,"textLines":1,"bbox":[94,218,314,76]}
+{"kind":"shape","id":"sh/neloj2t8","slide":8,"bbox":[466,168,350,138]}
+{"kind":"textbox","id":"sh/ytsvu9kn","slide":8,"text":"Leave","textPreview":"Leave","textChars":5,"textLines":1,"bbox":[484,184,314,28]}
+{"kind":"textbox","id":"sh/58z25kb6","slide":8,"text":"Leave types, accruals, balances, calendars, approvals, payroll impact, and audit.","textPreview":"Leave types, accruals, balances, calendars, approvals, payroll impact, and audit.","textChars":81,"textLines":1,"bbox":[484,218,314,76]}
+{"kind":"shape","id":"sh/gn29gr2p","slide":8,"bbox":[856,168,350,138]}
+{"kind":"textbox","id":"sh/u54zidon","slide":8,"text":"Attendance","textPreview":"Attendance","textChars":10,"textLines":1,"bbox":[874,184,314,28]}
+{"kind":"textbox","id":"sh/nqxs72x4","slide":8,"text":"Punch capture, regularization, daily summaries, first connector framework, and payroll feed.","textPreview":"Punch capture, regularization, daily summaries, first connector framework, and payroll feed.","textChars":92,"textLines":1,"bbox":[874,218,314,76]}
+{"kind":"shape","id":"sh/cbulwval","slide":8,"bbox":[188,352,410,154]}
+{"kind":"textbox","id":"sh/5sneloj2","slide":8,"text":"Payroll + India Compliance","textPreview":"Payroll + India Compliance","textChars":26,"textLines":1,"bbox":[206,368,374,28]}
+{"kind":"textbox","id":"sh/ytsvu9kn","slide":8,"text":"Salary structures, payroll runs, exceptions, payslips, PF, ESI, PT, TDS, Form 16, FBP, and revisions.","textPreview":"Salary structures, payroll runs, exceptions, payslips, PF, ESI, PT, TDS, Form 16, FBP, and revisions.","textChars":101,"textLines":1,"bbox":[206,402,374,92]}
+{"kind":"shape","id":"sh/neloj2t8","slide":8,"bbox":[682,352,410,154]}
+{"kind":"textbox","id":"sh/czed8v6p","slide":8,"text":"Standard Reports","textPreview":"Standard Reports","textChars":16,"textLines":1,"bbox":[700,368,374,28]}
+{"kind":"textbox","id":"sh/5kb6xkf6","slide":8,"text":"Operational and statutory reports with security filters, exports, drill-down, and audit evidence.","textPreview":"Operational and statutory reports with security filters, exports, drill-down, and audit evidence.","textChars":97,"textLines":1,"bbox":[700,402,374,92]}
+{"kind":"shape","id":"sh/yhgn29gr","slide":8,"bbox":[188,558,904,48]}
+{"kind":"textbox","id":"sh/n29gr2p8","slide":8,"text":"Later modules such as recruitment, LMS, performance, service desk, expenses, and assets remain future phases.","textPreview":"Later modules such as recruitment, LMS, performance, service desk, expenses, and assets remain future phases.","textChars":109,"textLines":1,"bbox":[214,570,852,24]}
+{"kind":"textbox","id":"sh/fyxobm58","slide":8,"text":"HRMS Platform | Phase 7A Approved Development","textPreview":"HRMS Platform | Phase 7A Approved Development","textChars":45,"textLines":1,"bbox":[64,682,520,20]}
+{"kind":"textbox","id":"sh/qd4vmtwr","slide":8,"text":"08","textPreview":"08","textChars":2,"textLines":1,"bbox":[1160,682,56,20]}
+{"kind":"notes","id":"nt/pfntei","slide":8,"text":""}
+{"kind":"slide","id":"sl/0wwpc4","slide":9,"title":"Approved Development Order","textShapes":34}
+{"kind":"textbox","id":"sh/xc3ylc7u","slide":9,"text":"Approved Development Order","textPreview":"Approved Development Order","textChars":26,"textLines":1,"bbox":[64,42,900,58]}
+{"kind":"textbox","id":"sh/mlkjm1cf","slide":9,"text":"The order is dependency-led, so business features wait for the platform services they need.","textPreview":"The order is dependency-led, so business features wait for the platform services they need.","textChars":91,"textLines":1,"bbox":[64,104,940,44]}
+{"kind":"shape","id":"sh/f6dcbulw","slide":9,"bbox":[86,154,1086,42]}
+{"kind":"textbox","id":"sh/4zidonyd","slide":9,"text":"S1","textPreview":"S1","textChars":2,"textLines":1,"bbox":[100,164,60,22]}
+{"kind":"textbox","id":"sh/xkf6dcbu","slide":9,"text":"Tenant + Identity","textPreview":"Tenant + Identity","textChars":17,"textLines":1,"bbox":[186,164,309,22]}
+{"kind":"textbox","id":"sh/mtwra5gb","slide":9,"text":"Every request is tenant-safe and permission-aware.","textPreview":"Every request is tenant-safe and permission-aware.","textChars":50,"textLines":1,"bbox":[523,164,632,22]}
+{"kind":"shape","id":"sh/fepkzupw","slide":9,"bbox":[86,196,1086,42]}
+{"kind":"textbox","id":"sh/83itgfml","slide":9,"text":"S2","textPreview":"S2","textChars":2,"textLines":1,"bbox":[100,206,60,22]}
+{"kind":"textbox","id":"sh/xobm58z2","slide":9,"text":"Effective Dating + Audit + Events","textPreview":"Effective Dating + Audit + Events","textChars":33,"textLines":1,"bbox":[186,206,309,22]}
+{"kind":"textbox","id":"sh/dcbulwva","slide":9,"text":"History, evidence, and module events are working.","textPreview":"History, evidence, and module events are working.","textChars":49,"textLines":1,"bbox":[523,206,632,22]}
+{"kind":"shape","id":"sh/kre1w7mp","slide":9,"bbox":[86,238,1086,42]}
+{"kind":"textbox","id":"sh/val87ed8","slide":9,"text":"S3","textPreview":"S3","textChars":2,"textLines":1,"bbox":[100,248,60,22]}
+{"kind":"textbox","id":"sh/6psfil0r","slide":9,"text":"Rule + Workflow + Configuration","textPreview":"Rule + Workflow + Configuration","textChars":31,"textLines":1,"bbox":[186,248,309,22]}
+{"kind":"textbox","id":"sh/donyd0z6","slide":9,"text":"Policies, approvals, and forms are data-driven.","textPreview":"Policies, approvals, and forms are data-driven.","textChars":47,"textLines":1,"bbox":[523,248,632,22]}
+{"kind":"shape","id":"sh/k3q5o7qp","slide":9,"bbox":[86,280,1086,42]}
+{"kind":"textbox","id":"sh/vixczed8","slide":9,"text":"S4","textPreview":"S4","textChars":2,"textLines":1,"bbox":[100,290,60,22]}
+{"kind":"textbox","id":"sh/2x4nap4r","slide":9,"text":"Core HR + ESS","textPreview":"Core HR + ESS","textChars":13,"textLines":1,"bbox":[186,290,309,22]}
+{"kind":"textbox","id":"sh/d0z61032","slide":9,"text":"Employee master and self-service become usable.","textPreview":"Employee master and self-service become usable.","textChars":47,"textLines":1,"bbox":[523,290,632,22]}
+{"kind":"shape","id":"sh/kf6dcbul","slide":9,"bbox":[86,322,1086,42]}
+{"kind":"textbox","id":"sh/0bi9s36h","slide":9,"text":"S5","textPreview":"S5","textChars":2,"textLines":1,"bbox":[100,332,60,22]}
+{"kind":"textbox","id":"sh/pwb2hwfy","slide":9,"text":"Leave","textPreview":"Leave","textChars":5,"textLines":1,"bbox":[186,332,309,22]}
+{"kind":"textbox","id":"sh/i5sneloj","slide":9,"text":"Leave policies, balances, applications, and approvals work.","textPreview":"Leave policies, balances, applications, and approvals work.","textChars":59,"textLines":1,"bbox":[523,332,632,22]}
+{"kind":"shape","id":"sh/7qpg3ex0","slide":9,"bbox":[86,364,1086,42]}
+{"kind":"textbox","id":"sh/wjudg7ad","slide":9,"text":"S6","textPreview":"S6","textChars":2,"textLines":1,"bbox":[100,374,60,22]}
+{"kind":"textbox","id":"sh/p4r65wju","slide":9,"text":"Attendance + Connector","textPreview":"Attendance + Connector","textChars":22,"textLines":1,"bbox":[186,374,309,22]}
+{"kind":"textbox","id":"sh/ed8v6psf","slide":9,"text":"Attendance capture and payroll feed work.","textPreview":"Attendance capture and payroll feed work.","textChars":41,"textLines":1,"bbox":[523,374,632,22]}
+{"kind":"shape","id":"sh/7y1kre1w","slide":9,"bbox":[86,406,1086,42]}
+{"kind":"textbox","id":"sh/0nuxc3yl","slide":9,"text":"S7","textPreview":"S7","textChars":2,"textLines":1,"bbox":[100,416,60,22]}
+{"kind":"textbox","id":"sh/p8nqxs72","slide":9,"text":"Payroll Engine","textPreview":"Payroll Engine","textChars":14,"textLines":1,"bbox":[186,416,309,22]}
+{"kind":"textbox","id":"sh/fepkzupw","slide":9,"text":"Payroll run, calculations, exceptions, and payslips work.","textPreview":"Payroll run, calculations, exceptions, and payslips work.","textChars":57,"textLines":1,"bbox":[523,416,632,22]}
+{"kind":"shape","id":"sh/mtwra5gb","slide":9,"bbox":[86,448,1086,42]}
+{"kind":"textbox","id":"sh/xkf6dcbu","slide":9,"text":"S8","textPreview":"S8","textChars":2,"textLines":1,"bbox":[100,458,60,22]}
+{"kind":"textbox","id":"sh/4zidonyd","slide":9,"text":"India Compliance","textPreview":"India Compliance","textChars":16,"textLines":1,"bbox":[186,458,309,22]}
+{"kind":"textbox","id":"sh/f6dcbulw","slide":9,"text":"PF, ESI, PT, TDS, Form 16, FBP, and revisions are covered.","textPreview":"PF, ESI, PT, TDS, Form 16, FBP, and revisions are covered.","textChars":58,"textLines":1,"bbox":[523,458,632,22]}
+{"kind":"shape","id":"sh/mlkjm1cf","slide":9,"bbox":[86,490,1086,42]}
+{"kind":"textbox","id":"sh/xc3ylc7u","slide":9,"text":"S9","textPreview":"S9","textChars":2,"textLines":1,"bbox":[100,500,60,22]}
+{"kind":"textbox","id":"sh/4r65wjud","slide":9,"text":"Workflow Hardening","textPreview":"Workflow Hardening","textChars":18,"textLines":1,"bbox":[186,500,309,22]}
+{"kind":"textbox","id":"sh/fu18jqh0","slide":9,"text":"Delegation, SLA, escalation, and migration are hardened.","textPreview":"Delegation, SLA, escalation, and migration are hardened.","textChars":56,"textLines":1,"bbox":[523,500,632,22]}
+{"kind":"shape","id":"sh/m94fu18j","slide":9,"bbox":[86,532,1086,42]}
+{"kind":"textbox","id":"sh/6dcbulwv","slide":9,"text":"S10","textPreview":"S10","textChars":3,"textLines":1,"bbox":[100,542,60,22]}
+{"kind":"textbox","id":"sh/vy90je9c","slide":9,"text":"Reports + Release","textPreview":"Reports + Release","textChars":17,"textLines":1,"bbox":[186,542,309,22]}
+{"kind":"textbox","id":"sh/oj2t83it","slide":9,"text":"Reports, exports, performance, security, and release readiness.","textPreview":"Reports, exports, performance, security, and release readiness.","textChars":63,"textLines":1,"bbox":[523,542,632,22]}
+{"kind":"textbox","id":"sh/d4vmtwra","slide":9,"text":"HRMS Platform | Phase 7A Approved Development","textPreview":"HRMS Platform | Phase 7A Approved Development","textChars":45,"textLines":1,"bbox":[64,682,520,20]}
+{"kind":"textbox","id":"sh/61032lsz","slide":9,"text":"09","textPreview":"09","textChars":2,"textLines":1,"bbox":[1160,682,56,20]}
+{"kind":"notes","id":"nt/0wwpc4","slide":9,"text":""}
+{"kind":"slide","id":"sl/xwerca","slide":10,"title":"Security, Audit, And Quality Controls","textShapes":17}
+{"kind":"textbox","id":"sh/oj2t83it","slide":10,"text":"Security, Audit, And Quality Controls","textPreview":"Security, Audit, And Quality Controls","textChars":37,"textLines":1,"bbox":[64,42,900,58]}
+{"kind":"textbox","id":"sh/vy90je9c","slide":10,"text":"These controls apply across the whole Phase 7A build, not only one module.","textPreview":"These controls apply across the whole Phase 7A build, not only one module.","textChars":74,"textLines":1,"bbox":[64,104,940,44]}
+{"kind":"shape","id":"sh/6dcbulwv","slide":10,"bbox":[76,170,350,132]}
+{"kind":"textbox","id":"sh/dsji5sne","slide":10,"text":"Tenant isolation","textPreview":"Tenant isolation","textChars":16,"textLines":1,"bbox":[94,186,314,28]}
+{"kind":"textbox","id":"sh/o7qpg3ex","slide":10,"text":"Every table and query must respect tenant context and prevent cross-tenant access.","textPreview":"Every table and query must respect tenant context and prevent cross-tenant access.","textChars":82,"textLines":1,"bbox":[94,220,314,70]}
+{"kind":"shape","id":"sh/vmtwra5g","slide":10,"bbox":[466,170,350,132]}
+{"kind":"textbox","id":"sh/61032lsz","slide":10,"text":"RBAC + ABAC","textPreview":"RBAC + ABAC","textChars":11,"textLines":1,"bbox":[484,186,314,28]}
+{"kind":"textbox","id":"sh/dg7adsji","slide":10,"text":"Role permissions and policy conditions control access to every action and API.","textPreview":"Role permissions and policy conditions control access to every action and API.","textChars":78,"textLines":1,"bbox":[484,220,314,70]}
+{"kind":"shape","id":"sh/ovahoza1","slide":10,"bbox":[856,170,350,132]}
+{"kind":"textbox","id":"sh/mtwra5gb","slide":10,"text":"Audit / Time Machine","textPreview":"Audit / Time Machine","textChars":20,"textLines":1,"bbox":[874,186,314,28]}
+{"kind":"textbox","id":"sh/fepkzupw","slide":10,"text":"Important changes are recorded with who, when, what changed, and approval evidence.","textPreview":"Important changes are recorded with who, when, what changed, and approval evidence.","textChars":83,"textLines":1,"bbox":[874,220,314,70]}
+{"kind":"shape","id":"sh/4zidonyd","slide":10,"bbox":[76,344,350,132]}
+{"kind":"textbox","id":"sh/xkf6dcbu","slide":10,"text":"OpenAPI","textPreview":"OpenAPI","textChars":7,"textLines":1,"bbox":[94,360,314,28]}
+{"kind":"textbox","id":"sh/mlkjm1cf","slide":10,"text":"Every API is versioned, documented, and testable before implementation is complete.","textPreview":"Every API is versioned, documented, and testable before implementation is complete.","textChars":83,"textLines":1,"bbox":[94,394,314,70]}
+{"kind":"shape","id":"sh/f6dcbulw","slide":10,"bbox":[466,344,350,132]}
+{"kind":"textbox","id":"sh/4r65wjud","slide":10,"text":"Testing","textPreview":"Testing","textChars":7,"textLines":1,"bbox":[484,360,314,28]}
+{"kind":"textbox","id":"sh/xc3ylc7u","slide":10,"text":"Unit, integration, E2E, security, performance, and tenant-isolation tests are required.","textPreview":"Unit, integration, E2E, security, performance, and tenant-isolation tests are required.","textChars":87,"textLines":1,"bbox":[484,394,314,70]}
+{"kind":"shape","id":"sh/m94fu18j","slide":10,"bbox":[856,344,350,132]}
+{"kind":"textbox","id":"sh/fu18jqh0","slide":10,"text":"Data protection","textPreview":"Data protection","textChars":15,"textLines":1,"bbox":[874,360,314,28]}
+{"kind":"textbox","id":"sh/7qpg3ex0","slide":10,"text":"Sensitive payroll and personal data require masking, encryption, retention, and export controls.","textPreview":"Sensitive payroll and personal data require masking, encryption, retention, and export controls.","textChars":96,"textLines":1,"bbox":[874,394,314,70]}
+{"kind":"shape","id":"sh/i5sneloj","slide":10,"bbox":[76,536,1130,52]}
+{"kind":"textbox","id":"sh/pwb2hwfy","slide":10,"text":"Target coverage is at least 85%, with extra focus on payroll calculations, rules, ledger, audit, and security paths.","textPreview":"Target coverage is at least 85%, with extra focus on payroll calculations, rules, ledger, audit, and security paths.","textChars":116,"textLines":1,"bbox":[106,550,1070,24]}
+{"kind":"textbox","id":"sh/0bi9s36h","slide":10,"text":"HRMS Platform | Phase 7A Approved Development","textPreview":"HRMS Platform | Phase 7A Approved Development","textChars":45,"textLines":1,"bbox":[64,682,520,20]}
+{"kind":"textbox","id":"sh/7y1kre1w","slide":10,"text":"10","textPreview":"10","textChars":2,"textLines":1,"bbox":[1160,682,56,20]}
+{"kind":"notes","id":"nt/xwerca","slide":10,"text":""}
+{"kind":"slide","id":"sl/i6s5gp","slide":11,"title":"What Is Not Being Built Now","textShapes":8}
+{"kind":"textbox","id":"sh/e1w7mp0b","slide":11,"text":"What Is Not Being Built Now","textPreview":"What Is Not Being Built Now","textChars":27,"textLines":1,"bbox":[64,42,900,58]}
+{"kind":"textbox","id":"sh/psfil0rq","slide":11,"text":"The architecture is prepared for future modules, but Phase 7A stays focused.","textPreview":"The architecture is prepared for future modules, but Phase 7A stays focused.","textChars":76,"textLines":1,"bbox":[64,104,940,44]}
+{"kind":"shape","id":"sh/w7mp0bi9","slide":11,"bbox":[78,170,516,354]}
+{"kind":"textbox","id":"sh/7adsji5s","slide":11,"text":"Later phases","textPreview":"Later phases","textChars":12,"textLines":1,"bbox":[112,204,280,32]}
+{"kind":"textbox","id":"sh/epkzupwb","slide":11,"text":"- Recruitment and onboarding expansion.\n- Performance, LMS, engagement, expenses, assets, and service desk.\n- Advanced BI, marketplace, and advanced AI assistant scope.\n- Multi-country payroll packs beyond the India-first foundation.","textPreview":"- Recruitment and onboarding expansion. | - Performance, LMS, engagement, expenses, assets, and service desk. | - Advanced BI, marketplac...","textChars":233,"textLines":4,"bbox":[112,254,420,188]}
+{"kind":"shape","id":"sh/pg3ex0nu","slide":11,"bbox":[686,170,516,354]}
+{"kind":"textbox","id":"sh/wval87ed","slide":11,"text":"Future-ready approach","textPreview":"Future-ready approach","textChars":21,"textLines":1,"bbox":[720,204,330,32]}
+{"kind":"textbox","id":"sh/36hcrmhk","slide":11,"text":"- New modules connect through extensions and configuration.\n- Customer-specific behavior does not modify core logic.\n- Providers and connectors remain replaceable.\n- Approved events and APIs reduce direct coupling.","textPreview":"- New modules connect through extensions and configuration. | - Customer-specific behavior does not modify core logic. | - Providers and ...","textChars":214,"textLines":4,"bbox":[720,254,420,188]}
+{"kind":"textbox","id":"sh/eloj2t83","slide":11,"text":"HRMS Platform | Phase 7A Approved Development","textPreview":"HRMS Platform | Phase 7A Approved Development","textChars":45,"textLines":1,"bbox":[64,682,520,20]}
+{"kind":"textbox","id":"sh/wra5gbq1","slide":11,"text":"11","textPreview":"11","textChars":2,"textLines":1,"bbox":[1160,682,56,20]}
+{"kind":"notes","id":"nt/i6s5gp","slide":11,"text":""}
+{"kind":"slide","id":"sl/esw79d","slide":12,"title":"Ready To Start Phase 7A Development","textShapes":13}
+{"kind":"textbox","id":"sh/7u54zido","slide":12,"text":"Ready To Start Phase 7A Development","textPreview":"Ready To Start Phase 7A Development","textChars":35,"textLines":1,"bbox":[64,42,900,58]}
+{"kind":"textbox","id":"sh/wfyxobm5","slide":12,"text":"The documentation gate is complete and the approved build can begin from Sprint S1.","textPreview":"The documentation gate is complete and the approved build can begin from Sprint S1.","textChars":83,"textLines":1,"bbox":[64,104,940,44]}
+{"kind":"shape","id":"sh/l0rqd4vm","slide":12,"bbox":[74,170,350,118]}
+{"kind":"textbox","id":"sh/eloj2t83","slide":12,"text":"5","textPreview":"5","textChars":1,"textLines":1,"bbox":[96,188,306,44]}
+{"kind":"textbox","id":"sh/36hcrmhk","slide":12,"text":"document types per module: BRD, Technical, DB, UI, Test","textPreview":"document types per module: BRD, Technical, DB, UI, Test","textChars":55,"textLines":1,"bbox":[96,238,306,34]}
+{"kind":"shape","id":"sh/wra5gbq1","slide":12,"bbox":[466,170,350,118]}
+{"kind":"textbox","id":"sh/lc7u54zi","slide":12,"text":"11","textPreview":"11","textChars":2,"textLines":1,"bbox":[488,188,306,44]}
+{"kind":"textbox","id":"sh/epkzupwb","slide":12,"text":"approved development module sets","textPreview":"approved development module sets","textChars":32,"textLines":1,"bbox":[488,238,306,34]}
+{"kind":"shape","id":"sh/7adsji5s","slide":12,"bbox":[856,170,350,118]}
+{"kind":"textbox","id":"sh/nqxs72x4","slide":12,"text":"S1","textPreview":"S1","textChars":2,"textLines":1,"bbox":[878,188,306,44]}
+{"kind":"textbox","id":"sh/u54zidon","slide":12,"text":"first development focus: Tenant + Identity","textPreview":"first development focus: Tenant + Identity","textChars":42,"textLines":1,"bbox":[878,238,306,34]}
+{"kind":"shape","id":"sh/5sneloj2","slide":12,"bbox":[76,346,1130,122]}
+{"kind":"textbox","id":"sh/cbulwval","slide":12,"text":"Business conclusion","textPreview":"Business conclusion","textChars":19,"textLines":1,"bbox":[106,376,300,30]}
+{"kind":"textbox","id":"sh/neloj2t8","slide":12,"text":"Phase 7A delivers a configurable, tenant-safe, auditable HRMS foundation plus the first real HR operations. It is suitable for enterprise delivery because rules, workflows, forms, reports, integrations, and future modules are designed to be added without rewriting the core.","textPreview":"Phase 7A delivers a configurable, tenant-safe, auditable HRMS foundation plus the first real HR operations. It is suitable for enterprise...","textChars":274,"textLines":1,"bbox":[106,420,1060,48]}
+{"kind":"shape","id":"sh/ytsvu9kn","slide":12,"bbox":[76,510,1130,74]}
+{"kind":"textbox","id":"sh/5kb6xkf6","slide":12,"text":"Sources used across approved research and summary: approved internal Phase 7A docs, Wikimedia Commons visuals, OpenAPI, OWASP, WCAG, Microsoft SQL Server RLS, OpenFeature, RabbitMQ, and HR solution market references such as Zoho People, Keka, greytHR, BambooHR, and Darwinbox.","textPreview":"Sources used across approved research and summary: approved internal Phase 7A docs, Wikimedia Commons visuals, OpenAPI, OWASP, WCAG, Micr...","textChars":276,"textLines":1,"bbox":[106,530,1060,36]}
+{"kind":"textbox","id":"sh/czed8v6p","slide":12,"text":"HRMS Platform | Phase 7A Approved Development","textPreview":"HRMS Platform | Phase 7A Approved Development","textChars":45,"textLines":1,"bbox":[64,682,520,20]}
+{"kind":"textbox","id":"sh/n29gr2p8","slide":12,"text":"12","textPreview":"12","textChars":2,"textLines":1,"bbox":[1160,682,56,20]}
+{"kind":"notes","id":"nt/esw79d","slide":12,"text":""}

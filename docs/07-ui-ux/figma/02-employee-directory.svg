@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="600" viewBox="0 0 960 600" font-family="Segoe UI, Arial, sans-serif">
+  <rect width="960" height="600" fill="#f8fafc"/>
+  <!-- top bar -->
+  <rect x="0" y="0" width="960" height="52" fill="#1e3a5f"/>
+  <circle cx="28" cy="26" r="11" fill="#4f8cff"/>
+  <text x="46" y="31" fill="#fff" font-size="14" font-weight="700">HRMS</text>
+  <rect x="120" y="14" width="150" height="24" rx="12" fill="#2b4a72"/>
+  <text x="134" y="30" fill="#cfe0f5" font-size="11">▾ Acme Corp (tenant)</text>
+  <rect x="300" y="14" width="260" height="24" rx="12" fill="#2b4a72"/>
+  <text x="314" y="30" fill="#9fb6d6" font-size="11">search people, actions…</text>
+  <text x="835" y="31" fill="#cfe0f5" font-size="11">EN ▾   🔔   Priya ▾</text>
+  <!-- side nav -->
+  <rect x="0" y="52" width="180" height="548" fill="#ffffff" stroke="#e2e8f0"/>
+  <text x="20" y="92" fill="#64748b" font-size="12">Dashboard</text>
+  <text x="20" y="124" fill="#64748b" font-size="12">My Stuff</text>
+  <rect x="0" y="140" width="180" height="30" fill="#eaf1ff"/>
+  <text x="20" y="160" fill="#1d4ed8" font-size="12" font-weight="700">People</text>
+  <text x="20" y="192" fill="#64748b" font-size="12">Leave</text>
+  <text x="20" y="224" fill="#64748b" font-size="12">Attendance</text>
+  <text x="20" y="256" fill="#64748b" font-size="12">Payroll</text>
+  <text x="20" y="288" fill="#64748b" font-size="12">Workflows</text>
+  <text x="20" y="320" fill="#64748b" font-size="12">Reports</text>
+  <text x="20" y="352" fill="#64748b" font-size="12">Settings</text>
+  <!-- content -->
+  <text x="206" y="84" fill="#94a3b8" font-size="11">People ▸ Directory</text>
+  <text x="206" y="108" fill="#0f172a" font-size="19" font-weight="700">Employee Directory</text>
+  <rect x="790" y="90" width="150" height="34" rx="6" fill="#4f8cff"/>
+  <text x="865" y="112" fill="#fff" font-size="12" font-weight="600" text-anchor="middle">+ Add Employee</text>
+  <!-- filter bar -->
+  <rect x="206" y="138" width="734" height="40" rx="6" fill="#ffffff" stroke="#e2e8f0"/>
+  <text x="222" y="163" fill="#94a3b8" font-size="12">search…</text>
+  <text x="420" y="163" fill="#475569" font-size="12">Dept ▾</text>
+  <text x="500" y="163" fill="#475569" font-size="12">Location ▾</text>
+  <text x="600" y="163" fill="#475569" font-size="12">Status ▾</text>
+  <text x="820" y="163" fill="#475569" font-size="12">columns</text>
+  <text x="895" y="163" fill="#475569" font-size="12">export</text>
+  <!-- table header -->
+  <rect x="206" y="190" width="734" height="34" fill="#f1f5f9"/>
+  <text x="240" y="212" fill="#475569" font-size="11" font-weight="700">NAME (ID)</text>
+  <text x="430" y="212" fill="#475569" font-size="11" font-weight="700">DESIGNATION</text>
+  <text x="580" y="212" fill="#475569" font-size="11" font-weight="700">DEPARTMENT</text>
+  <text x="720" y="212" fill="#475569" font-size="11" font-weight="700">MANAGER</text>
+  <text x="860" y="212" fill="#475569" font-size="11" font-weight="700">STATUS</text>
+  <!-- rows -->
+  <g font-size="12" fill="#0f172a">
+    <rect x="206" y="224" width="734" height="40" fill="#ffffff" stroke="#eef2f7"/>
+    <circle cx="228" cy="244" r="9" fill="#cbd5e1"/><text x="248" y="248">Anita R (1042)</text>
+    <text x="430" y="248">Engineer</text><text x="580" y="248">Platform</text><text x="720" y="248">Rohan K</text>
+    <rect x="860" y="234" width="54" height="20" rx="10" fill="#dcfce7"/><text x="868" y="248" fill="#166534" font-size="10">Active</text>
+    <rect x="206" y="264" width="734" height="40" fill="#fbfdff" stroke="#eef2f7"/>
+    <circle cx="228" cy="284" r="9" fill="#cbd5e1"/><text x="248" y="288">Vikram S (1043)</text>
+    <text x="430" y="288">Sr. Engineer</text><text x="580" y="288">Platform</text><text x="720" y="288">Rohan K</text>
+    <rect x="860" y="274" width="54" height="20" rx="10" fill="#dcfce7"/><text x="868" y="288" fill="#166534" font-size="10">Active</text>
+    <rect x="206" y="304" width="734" height="40" fill="#ffffff" stroke="#eef2f7"/>
+    <circle cx="228" cy="324" r="9" fill="#cbd5e1"/><text x="248" y="328">Meera J (1051)</text>
+    <text x="430" y="328">HR Executive</text><text x="580" y="328">Human Resources</text><text x="720" y="328">Priya N</text>
+    <rect x="860" y="314" width="60" height="20" rx="10" fill="#fef9c3"/><text x="868" y="328" fill="#854d0e" font-size="10">On Leave</text>
+  </g>
+  <text x="208" y="372" fill="#94a3b8" font-size="11">Manager view auto-scopes to own department (ABAC) — no toggle</text>
+  <!-- pager -->
+  <text x="206" y="566" fill="#475569" font-size="11">◀ 1 2 3 … ▶</text>
+  <text x="470" y="566" fill="#475569" font-size="11">rows: 25 ▾</text>
+  <text x="940" y="566" fill="#475569" font-size="11" text-anchor="end">1–25 of 612</text>
+</svg>

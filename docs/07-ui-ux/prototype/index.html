@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light" data-density="comfortable">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>People Ops Platform — AI-Native HRMS Prototype</title>
+<style>
+  :root{
+    --accent:#6366F1; --accent-600:#4F46E5; --accent-soft:#EEF1FF; --violet:#8B5CF6;
+    --grad:linear-gradient(135deg,#6366F1 0%, #8B5CF6 100%);
+    --success:#10B981; --success-soft:#E7FBF3;
+    --warning:#F59E0B; --warning-soft:#FEF4E2;
+    --danger:#EF4444;  --danger-soft:#FDECEC;
+    --text:#0F172A; --muted:#667085; --faint:#94A3B8;
+    --surface:#FFFFFF; --canvas:#F6F7FB; --card:#FFFFFF; --border:#ECEEF3;
+    --shadow:0 1px 2px rgba(16,24,40,.04), 0 6px 20px rgba(16,24,40,.06);
+    --shadow-lg:0 12px 34px rgba(16,24,40,.14);
+    --radius:16px; --rsm:10px;
+    --pad:20px; --gap:18px; --fs:14px; --rowpad:13px;
+  }
+  html[data-theme="dark"]{
+    --text:#E6E9F2; --muted:#9AA4B8; --faint:#6B7488;
+    --surface:#161A24; --canvas:#0F121A; --card:#1B2030; --border:#262C3B;
+    --accent-soft:#22264A; --success-soft:#10241D; --warning-soft:#2A2113; --danger-soft:#2A1717;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.35);
+  }
+  html[data-density="compact"]{--pad:14px;--gap:12px;--fs:13px;--rowpad:9px}
+  html[data-density="dense"]{--pad:10px;--gap:9px;--fs:12.5px;--rowpad:6px;--radius:12px}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+    background:var(--canvas);color:var(--text);font-size:var(--fs);-webkit-font-smoothing:antialiased}
+  .banner{background:var(--grad);color:#fff;font-size:12px;padding:6px 18px;text-align:center}
+  .app{display:flex;min-height:100vh}
+  /* sidebar */
+  .side{width:244px;background:var(--surface);border-right:1px solid var(--border);
+    padding:16px 12px;display:flex;flex-direction:column;gap:3px;position:sticky;top:0;height:100vh;overflow:auto}
+  .brand{display:flex;align-items:center;gap:10px;padding:6px 10px 14px}
+  .logo{width:34px;height:34px;border-radius:10px;background:var(--grad);display:grid;place-items:center;color:#fff;font-weight:800}
+  .brand b{font-size:15px}.brand span{display:block;font-size:11px;color:var(--faint)}
+  .navlabel{font-size:10.5px;color:var(--faint);text-transform:uppercase;letter-spacing:.6px;margin:12px 12px 4px}
+  .nav{display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:11px;color:var(--muted);
+    font-size:var(--fs);font-weight:500;cursor:pointer;border:none;background:none;width:100%;text-align:left}
+  .nav:hover{background:var(--canvas);color:var(--text)}
+  .nav.active{background:var(--accent-soft);color:var(--accent-600);font-weight:600}
+  .nav .ic{font-size:16px;width:20px;text-align:center}
+  .nav .badge{margin-left:auto;background:var(--danger);color:#fff;font-size:10.5px;font-weight:700;border-radius:20px;padding:1px 7px}
+  .nav .ai-tag{margin-left:auto;font-size:9px;font-weight:800;color:var(--violet);background:var(--accent-soft);padding:2px 6px;border-radius:6px}
+  .side .foot{margin-top:auto;font-size:11px;color:var(--faint);padding:10px 12px;border-top:1px solid var(--border)}
+  /* main */
+  .main{flex:1;min-width:0;display:flex;flex-direction:column}
+  .top{display:flex;align-items:center;gap:12px;padding:11px 22px;background:var(--surface);
+    border-bottom:1px solid var(--border);position:sticky;top:0;z-index:20}
+  .tenant{display:flex;align-items:center;gap:8px;font-weight:600;padding:7px 11px;border:1px solid var(--border);border-radius:10px;cursor:pointer;background:var(--card)}
+  .tenant .dot{width:18px;height:18px;border-radius:6px;background:var(--grad)}
+  .cmdk{flex:1;max-width:440px;display:flex;align-items:center;gap:8px;background:var(--canvas);border:1px solid var(--border);
+    border-radius:10px;padding:8px 12px;color:var(--faint);cursor:text}
+  .cmdk kbd{margin-left:auto;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:1px 6px;font-size:11px}
+  .iconbtn{width:36px;height:36px;border-radius:9px;border:1px solid var(--border);background:var(--card);cursor:pointer;font-size:15px;position:relative}
+  .iconbtn .ndot{position:absolute;top:6px;right:7px;width:7px;height:7px;border-radius:50%;background:var(--danger)}
+  .top .right{margin-left:auto;display:flex;align-items:center;gap:9px}
+  .rolepick{display:flex;align-items:center;gap:7px;border:1px solid var(--border);border-radius:9px;padding:6px 10px;background:var(--card);cursor:pointer;font-weight:600}
+  .avatar{width:34px;height:34px;border-radius:50%;background:var(--accent-soft);display:grid;place-items:center;font-weight:700;color:var(--accent-600);font-size:12px}
+  .seg{display:flex;border:1px solid var(--border);border-radius:9px;overflow:hidden;background:var(--card)}
+  .seg button{border:none;background:none;padding:6px 9px;cursor:pointer;color:var(--muted);font-size:12px}
+  .seg button.on{background:var(--accent-soft);color:var(--accent-600);font-weight:700}
+  .content{padding:22px;flex:1}
+  .screen{display:none;animation:f .22s ease}.screen.active{display:block}
+  @keyframes f{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  h1{font-size:22px;letter-spacing:-.3px}.sub{color:var(--muted);margin-top:3px}
+  h3{font-size:15px}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow)}
+  .pad{padding:var(--pad)}
+  .row{display:flex;gap:var(--gap);flex-wrap:wrap}
+  .grid{display:grid;gap:var(--gap)}
+  .btn{border:none;border-radius:10px;padding:9px 15px;font-weight:600;cursor:pointer;font-family:inherit;font-size:var(--fs)}
+  .btn.primary{background:var(--accent);color:#fff}.btn.primary:hover{background:var(--accent-600)}
+  .btn.ghost{background:var(--card);color:var(--text);border:1px solid var(--border)}
+  .btn.success{background:var(--success);color:#fff}.btn.danger{background:var(--card);color:var(--danger);border:1px solid #F3C8C8}
+  .pill{font-size:11.5px;font-weight:700;padding:3px 10px;border-radius:20px;display:inline-block}
+  .pill.green{background:var(--success-soft);color:#067a55}.pill.amber{background:var(--warning-soft);color:#a96a09}
+  .pill.red{background:var(--danger-soft);color:#c0392b}.pill.indigo{background:var(--accent-soft);color:var(--accent-600)}
+  /* widgets */
+  .wgrid{display:grid;grid-template-columns:repeat(12,1fr);gap:var(--gap);margin-top:18px}
+  .w{grid-column:span 3;position:relative}.w.s4{grid-column:span 4}.w.s6{grid-column:span 6}.w.s12{grid-column:span 12}
+  .w .wh{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);font-weight:600;margin-bottom:10px}
+  .w .grip{display:none;cursor:grab;color:var(--faint)}
+  .w .hide{display:none;margin-left:auto;cursor:pointer;color:var(--faint);border:none;background:none;font-size:14px}
+  .editing .w{outline:1.5px dashed var(--accent);outline-offset:3px}
+  .editing .w .grip,.editing .w .hide{display:inline}
+  .kpi .n{font-size:25px;font-weight:800;letter-spacing:-.5px}.kpi .ic{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;font-size:18px;margin-bottom:10px}
+  .up{color:var(--success);font-size:12px;font-weight:600}.down{color:var(--danger);font-size:12px;font-weight:600}
+  .gauge{width:108px;height:108px;border-radius:50%;display:grid;place-items:center;margin:6px auto;
+    background:conic-gradient(var(--success) 0 87%, var(--border) 87% 100%)}
+  .gauge .in{width:84px;height:84px;border-radius:50%;background:var(--card);display:grid;place-items:center;font-weight:800;font-size:22px}
+  .bars{display:flex;align-items:flex-end;gap:8px;height:90px}.bars div{flex:1;background:var(--accent-soft);border-radius:6px 6px 0 0}
+  .heat{display:grid;grid-template-columns:repeat(14,1fr);gap:4px}
+  .heat span{aspect-ratio:1;border-radius:4px;background:var(--accent-soft)}
+  table{width:100%;border-collapse:collapse;font-size:var(--fs)}
+  thead th{text-align:left;color:var(--muted);font-weight:600;font-size:11.5px;text-transform:uppercase;letter-spacing:.3px;padding:0 12px 10px}
+  tbody td{padding:var(--rowpad) 12px;border-top:1px solid var(--border)}tbody tr:hover{background:var(--canvas)}
+  .av{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:11px;color:#fff}
+  .emp{display:flex;align-items:center;gap:10px}
+  .toolbar{display:flex;align-items:center;gap:9px;margin:16px 0}
+  .chip{color:var(--muted);background:var(--card);border:1px solid var(--border);border-radius:9px;padding:7px 12px;cursor:pointer;font-size:13px}
+  /* overlays */
+  .overlay{position:fixed;inset:0;background:rgba(8,11,20,.45);display:none;z-index:60;align-items:flex-start;justify-content:center;padding-top:90px}
+  .overlay.open{display:flex}
+  .palette{width:580px;max-width:92vw;background:var(--surface);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow-lg);overflow:hidden}
+  .palette .pin{display:flex;align-items:center;gap:10px;padding:16px 18px;border-bottom:1px solid var(--border);font-size:16px;color:var(--muted)}
+  .palette .pin input{flex:1;border:none;outline:none;background:none;font-size:16px;color:var(--text);font-family:inherit}
+  .pgroup{padding:8px 10px}.pglabel{font-size:11px;color:var(--faint);text-transform:uppercase;letter-spacing:.5px;padding:8px 12px 4px}
+  .pitem{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:9px;cursor:pointer;font-size:14px}
+  .pitem:hover,.pitem.sel{background:var(--accent-soft);color:var(--accent-600)}
+  .pitem .k{margin-left:auto;font-size:11px;color:var(--faint)}
+  .pitem .ai{margin-left:auto;font-size:10px;font-weight:800;color:var(--violet);background:var(--accent-soft);padding:2px 7px;border-radius:6px}
+  /* AI panel */
+  .aifab{position:fixed;right:24px;bottom:24px;height:52px;padding:0 20px;border-radius:26px;background:var(--grad);color:#fff;
+    border:none;font-weight:700;font-size:14px;cursor:pointer;box-shadow:var(--shadow-lg);z-index:50;display:flex;gap:9px;align-items:center}
+  .aipanel{position:fixed;top:0;right:-440px;width:420px;max-width:92vw;height:100vh;background:var(--surface);border-left:1px solid var(--border);
+    box-shadow:var(--shadow-lg);z-index:61;transition:right .25s ease;display:flex;flex-direction:column}
+  .aipanel.open{right:0}
+  .aihead{padding:16px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+  .aibody{flex:1;overflow:auto;padding:18px;display:flex;flex-direction:column;gap:14px}
+  .bub{padding:12px 14px;border-radius:14px;font-size:13.5px;max-width:85%}
+  .bub.ai{background:var(--accent-soft);color:var(--text);border-bottom-left-radius:4px}
+  .bub.me{background:var(--accent);color:#fff;align-self:flex-end;border-bottom-right-radius:4px}
+  .chips{display:flex;flex-wrap:wrap;gap:8px}.sugg{font-size:12.5px;border:1px solid var(--border);border-radius:20px;padding:7px 12px;cursor:pointer;color:var(--muted);background:var(--card)}
+  .aifoot{padding:14px;border-top:1px solid var(--border)}
+  .aifoot input{width:100%;border:1px solid var(--border);border-radius:12px;padding:12px 14px;font-family:inherit;background:var(--card);color:var(--text)}
+  /* notif */
+  .notif{position:absolute;top:52px;right:22px;width:360px;background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow-lg);z-index:40;display:none}
+  .notif.open{display:block}
+  .ntabs{display:flex;gap:4px;padding:12px 14px 0}.ntab{font-size:12px;padding:6px 10px;border-radius:8px;cursor:pointer;color:var(--muted)}.ntab.on{background:var(--accent-soft);color:var(--accent-600);font-weight:700}
+  .nitem{display:flex;gap:11px;padding:13px 14px;border-top:1px solid var(--border);font-size:13px}
+  .nitem .d{width:8px;height:8px;border-radius:50%;background:var(--accent);margin-top:5px;flex:none}
+  /* workflow 2.0 */
+  .wftabs{display:flex;gap:6px;margin:16px 0}.wftab{padding:8px 14px;border-radius:10px;border:1px solid var(--border);background:var(--card);cursor:pointer;font-weight:600;font-size:13px;color:var(--muted)}.wftab.on{background:var(--accent-soft);color:var(--accent-600)}
+  .wf{display:grid;grid-template-columns:176px 1fr 220px;gap:14px}
+  .wf .col{padding:14px;min-height:420px}
+  .pi{display:flex;align-items:center;gap:9px;padding:9px 11px;border-radius:9px;background:var(--canvas);margin-bottom:7px;font-size:13px;font-weight:500;cursor:grab}
+  .pi:first-of-type{background:var(--accent-soft);color:var(--accent-600);font-weight:600}
+  .canvas{position:relative;background:radial-gradient(circle,var(--border) 1px,transparent 1px);background-size:18px 18px;border-radius:12px}
+  .node{position:absolute;padding:11px 15px;border-radius:11px;font-size:12.5px;font-weight:600;box-shadow:var(--shadow);background:var(--card);border:1px solid var(--border)}
+  .node.start{background:var(--success-soft);color:#067a55;border-color:#9be3c8}
+  .node.step{color:var(--accent-600);border-color:#C7CEFF}
+  .node.cond{background:var(--warning-soft);color:#a96a09;border-color:#f3d199}
+  .node.end{background:var(--danger-soft);color:#c0392b;border-color:#f3c4c4}
+  .zoomctl{position:absolute;right:12px;bottom:12px;display:flex;gap:6px}
+  .zoomctl button{width:30px;height:30px;border-radius:8px;border:1px solid var(--border);background:var(--surface);cursor:pointer;font-weight:700}
+  .minimap{position:absolute;left:12px;bottom:12px;width:120px;height:74px;border:1px solid var(--border);border-radius:8px;background:var(--canvas);overflow:hidden}
+  .minimap i{position:absolute;border-radius:3px;background:var(--accent);opacity:.5}
+  .prop label{font-size:11.5px;color:var(--muted);display:block;margin:13px 0 5px;font-weight:600}
+  .field{border:1px solid var(--border);border-radius:9px;padding:10px 12px;font-size:13px;display:flex;justify-content:space-between;background:var(--card)}
+  /* rule builder */
+  .rgroup{border:1px solid var(--border);border-radius:12px;padding:14px;background:var(--canvas)}
+  .cond{display:flex;gap:8px;align-items:center;margin:8px 0;flex-wrap:wrap}
+  .cond .sel{border:1px solid var(--border);border-radius:8px;padding:8px 11px;background:var(--card);font-size:13px}
+  .andor{font-size:11px;font-weight:800;color:var(--accent-600);background:var(--accent-soft);padding:3px 9px;border-radius:7px}
+  /* audit diff */
+  .diff{display:flex;gap:14px;margin-top:10px}
+  .diff .old{flex:1;background:var(--danger-soft);border-radius:10px;padding:12px;color:#c0392b}
+  .diff .new{flex:1;background:var(--success-soft);border-radius:10px;padding:12px;color:#067a55}
+  .tl{border-left:2px solid var(--border);margin-left:8px;padding-left:18px;display:flex;flex-direction:column;gap:18px;margin-top:8px}
+  .tl .ev{position:relative}.tl .ev::before{content:"";position:absolute;left:-25px;top:3px;width:11px;height:11px;border-radius:50%;background:var(--accent);border:2px solid var(--surface)}
+  .tag{font-size:10.5px;font-weight:800;padding:3px 8px;border-radius:7px;background:var(--accent-soft);color:var(--accent-600)}
+  /* org */
+  .org{display:flex;flex-direction:column;align-items:center;gap:0;margin-top:10px}
+  .onode{border:1px solid var(--border);border-radius:12px;padding:10px 16px;background:var(--card);text-align:center;box-shadow:var(--shadow)}
+  .orow{display:flex;gap:24px;justify-content:center;margin-top:24px;position:relative}
+  @media(max-width:1100px){.w{grid-column:span 6}.w.s4,.w.s6{grid-column:span 12}.wf{grid-template-columns:1fr}}
+  /* config tiles */
+  .tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--gap);margin-top:18px}
+  .tile{padding:18px;cursor:pointer;display:flex;flex-direction:column;gap:7px}
+  .tile:hover{box-shadow:var(--shadow-lg);transform:translateY(-1px);transition:.15s}
+  .tile .ic{width:40px;height:40px;border-radius:11px;background:var(--accent-soft);display:grid;place-items:center;font-size:19px}
+  .tile b{font-size:14px}.tile span{font-size:12px;color:var(--muted)}
+  /* toggle */
+  .toggle{width:40px;height:22px;border-radius:12px;background:var(--border);position:relative;cursor:pointer;flex:none}
+  .toggle.on{background:var(--accent)}.toggle i{position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.18s}.toggle.on i{left:20px}
+  .lrow{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--border)}.lrow:first-child{border-top:none}
+  .matrix div{display:flex;align-items:center;gap:10px;padding:11px 0;border-top:1px solid var(--border);font-size:13.5px}
+  .yes{color:var(--success);font-weight:800}.no{color:var(--danger);font-weight:800}
+  .fbrow{display:flex;align-items:center;gap:12px;padding:13px;border:1px solid var(--border);border-radius:11px;margin-bottom:10px;background:var(--card)}
+  .fbrow .grip{cursor:grab;color:var(--faint)}
+  .intg{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--gap);margin-top:18px}
+  .icard{padding:16px;display:flex;flex-direction:column;gap:10px}.icard .top{display:flex;align-items:center;gap:10px}
+  .icard .lg{width:40px;height:40px;border-radius:11px;background:var(--canvas);display:grid;place-items:center;font-size:20px}
+  .swatch{width:34px;height:34px;border-radius:9px;border:1px solid var(--border);cursor:pointer}
+  .sres{display:flex;align-items:center;gap:12px;padding:13px 14px;border-top:1px solid var(--border);cursor:pointer}.sres:hover{background:var(--canvas)}
+  .tree{font-size:13.5px}.tnode{margin-left:16px}
+  .trow{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:9px;cursor:pointer}
+  .trow:hover{background:var(--canvas)}.trow.sel{background:var(--accent-soft)}
+  .tcount{margin-left:auto;font-size:11px;font-weight:700;color:var(--accent-600);background:var(--accent-soft);padding:1px 8px;border-radius:20px}
+  .tcar{width:14px;display:inline-block;color:var(--faint);text-align:center}
+  .modal{width:520px;max-width:92vw;background:var(--surface);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow-lg);overflow:hidden}
+  .modal .mh{padding:16px 18px;border-bottom:1px solid var(--border);font-weight:700;display:flex;align-items:center}
+  .modal .mb{padding:8px 18px 18px;max-height:60vh;overflow:auto}
+</style>
+</head>
+<body>
+<div class="banner">🎨 People Ops Platform · AI-native HRMS prototype · “Modern &amp; Friendly” theme — for visual review (not production code) · try <b>⌘K</b>, the role switcher, dark mode &amp; density</div>
+<div class="app">
+  <aside class="side">
+    <div class="brand"><div class="logo">A</div><div><b>Acme HR</b><span>People Operations</span></div></div>
+    <div id="navWrap"></div>
+    <div class="foot">Nav + widgets are <b>metadata-driven</b><br/>per role, tenant &amp; feature flag</div>
+  </aside>
+
+  <div class="main">
+    <div class="top">
+      <div class="tenant"><span class="dot"></span> Acme Corp ▾</div>
+      <div class="cmdk" onclick="openCmd()">🔍 Search or run a command… <kbd>⌘K</kbd></div>
+      <div class="right">
+        <div class="seg" title="Data density">
+          <button data-d="comfortable" class="on" onclick="setDensity('comfortable',this)">Comfort</button>
+          <button data-d="compact" onclick="setDensity('compact',this)">Compact</button>
+          <button data-d="dense" onclick="setDensity('dense',this)">Dense</button>
+        </div>
+        <button class="iconbtn" onclick="toggleTheme()" title="Dark mode">🌓</button>
+        <button class="iconbtn" onclick="toggleNotif()" title="Notifications">🔔<span class="ndot"></span></button>
+        <div class="rolepick" onclick="cycleRole()" title="Switch role (demo)"><span id="roleIc">🧑‍💼</span> <span id="roleName">HR</span> ▾</div>
+        <div class="avatar">PN</div>
+      </div>
+    </div>
+
+    <!-- NOTIFICATION CENTER -->
+    <div class="notif" id="notif">
+      <div class="ntabs"><span class="ntab on">All</span><span class="ntab">Approvals</span><span class="ntab">Payroll</span><span class="ntab">Compliance</span><span class="ntab">System</span></div>
+      <div class="nitem"><span class="d"></span><div><b>Approval</b> · Anita's leave awaits you · <span style="color:var(--faint)">2m</span><div style="color:var(--muted)">SLA 6h remaining</div></div></div>
+      <div class="nitem"><span class="d" style="background:var(--success)"></span><div><b>Payroll</b> · June run completed ✓ · <span style="color:var(--faint)">1h</span></div></div>
+      <div class="nitem"><span class="d" style="background:var(--warning)"></span><div><b>Compliance</b> · ESI filing due in 3 days · <span style="color:var(--faint)">3h</span></div></div>
+      <div class="nitem"><span class="d" style="background:var(--danger)"></span><div><b>System</b> · Workflow "Expense" failed once · <span style="color:var(--faint)">5h</span></div></div>
+      <div style="padding:12px 14px;border-top:1px solid var(--border);font-size:12px;color:var(--muted)">Pin · Snooze · Mark all read</div>
+    </div>
+
+    <div class="content">
+      <!-- DASHBOARD (role + metadata driven) -->
+      <section class="screen active" id="dash">
+        <div style="display:flex;align-items:center;flex-wrap:wrap;gap:12px">
+          <div><h1 id="dashTitle">HR Dashboard</h1><div class="sub" id="dashSub">Your people, at a glance — configurable per role &amp; tenant.</div></div>
+          <div style="margin-left:auto;display:flex;gap:8px">
+            <button class="btn ghost" onclick="toggleEdit()" id="editBtn">⚙ Customize</button>
+            <button class="btn ghost" onclick="openCatalog()">＋ Add widget</button>
+          </div>
+        </div>
+        <div class="wgrid" id="widgets"></div>
+      </section>
+
+      <!-- PEOPLE -->
+      <section class="screen" id="people">
+        <div style="display:flex;align-items:center"><div><h1>Employee Directory</h1><div class="sub">612 people · ABAC-scoped to what you may see</div></div><button class="btn primary" style="margin-left:auto">＋ Add employee</button></div>
+        <div class="toolbar"><div class="cmdk" style="max-width:280px">🔍 Search name or ID…</div><span class="chip">Dept ▾</span><span class="chip">Location ▾</span><span class="chip">Status ▾</span><span class="chip" style="margin-left:auto">⬇ Export</span></div>
+        <div class="card pad"><table><thead><tr><th>Name</th><th>Designation</th><th>Department</th><th>Manager</th><th>Status</th></tr></thead><tbody id="emps"></tbody></table>
+          <div style="display:flex;justify-content:space-between;color:var(--muted);padding-top:14px;font-size:13px"><span>1–6 of 612</span><span>◀ 1 2 3 … ▶</span></div></div>
+      </section>
+
+      <!-- WORKFLOW STUDIO 2.0 -->
+      <section class="screen" id="workflow">
+        <div style="display:flex;align-items:center"><div><h1>Workflow Studio <span class="tag">no-code</span></h1><div class="sub">Leave Approval · <span class="tag">v3 draft</span></div></div>
+          <div style="margin-left:auto;display:flex;gap:8px"><button class="btn ghost">✓ Validate</button><button class="btn ghost">Save</button><button class="btn primary">Publish ▾</button></div></div>
+        <div class="wftabs"><span class="wftab on">Design</span><span class="wftab">Versions</span><span class="wftab">History</span><span class="wftab">Usage analytics</span></div>
+        <div class="wf">
+          <div class="card col"><div style="font-weight:700;font-size:12px;color:var(--muted);margin-bottom:10px">NODES</div>
+            <div class="pi">▭ Approval</div><div class="pi">◇ Decision</div><div class="pi">⎇ Condition</div><div class="pi">⫶ Parallel</div><div class="pi">✉ Notify</div><div class="pi">⏱ Wait / SLA</div><div class="pi">↥ Escalation</div><div class="pi">⚙ Action</div><div class="pi">🌐 API Call</div><div class="pi">⊞ Sub-workflow</div></div>
+          <div class="card col canvas">
+            <div style="position:absolute;left:12px;top:10px;z-index:2;display:flex;gap:8px;align-items:center"><span class="tag">v3</span><span class="pill amber">Draft</span></div>
+            <div style="position:absolute;right:12px;top:12px;z-index:2;font-size:11px;color:var(--muted)"><span style="color:#10B981">▬</span> success&nbsp;&nbsp;<span style="color:#EF4444">▬</span> escalation</div>
+            <svg style="position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none">
+              <defs>
+                <marker id="ah" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#94A3B8"/></marker>
+                <marker id="ag" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#10B981"/></marker>
+                <marker id="ar" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#EF4444"/></marker>
+              </defs>
+              <line x1="96" y1="201" x2="146" y2="202" stroke="#94A3B8" stroke-width="2" marker-end="url(#ah)"/>
+              <line x1="262" y1="202" x2="296" y2="202" stroke="#94A3B8" stroke-width="2" marker-end="url(#ah)"/>
+              <path d="M206,186 C236,150 270,120 300,108" fill="none" stroke="#94A3B8" stroke-width="2" marker-end="url(#ah)"/>
+              <line x1="392" y1="202" x2="466" y2="202" stroke="#10B981" stroke-width="2" marker-end="url(#ag)"/>
+              <path d="M412,108 C452,132 460,172 472,196" fill="none" stroke="#10B981" stroke-width="2" marker-end="url(#ag)"/>
+              <path d="M345,222 L345,276" fill="none" stroke="#EF4444" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#ar)"/>
+              <path d="M476,300 C508,266 506,228 490,212" fill="none" stroke="#EF4444" stroke-width="2" marker-end="url(#ar)"/>
+              <text x="250" y="150" fill="#a96a09" font-size="10" font-weight="700">&gt; 5 days</text>
+              <text x="266" y="194" fill="#667085" font-size="10">≤ 5 days</text>
+              <text x="350" y="258" fill="#c0392b" font-size="9">SLA breach</text>
+            </svg>
+            <div class="node start" style="left:24px;top:182px">● Start</div>
+            <div class="node cond" style="left:150px;top:184px">⎇ days &gt; 5?</div>
+            <div class="node step" style="left:300px;top:184px">Manager</div>
+            <div class="node step" style="left:300px;top:88px">HR Approval</div>
+            <div class="node step" style="left:300px;top:280px">⏱ SLA 8h → ↥ escalate</div>
+            <div class="node end" style="left:470px;top:184px">■ End</div>
+            <div class="minimap"><i style="left:6px;top:34px;width:10px;height:8px"></i><i style="left:30px;top:34px;width:16px;height:8px"></i><i style="left:60px;top:14px;width:18px;height:8px"></i><i style="left:60px;top:54px;width:24px;height:8px"></i><i style="left:96px;top:34px;width:8px;height:8px;background:var(--danger)"></i></div>
+            <div class="zoomctl"><button>−</button><button>⊡</button><button>+</button></div>
+          </div>
+          <div class="card col prop"><div style="font-weight:700;font-size:12px;color:var(--muted)">PROPERTIES — HR Approval</div>
+            <label>Approver</label><div class="field">Role: HR Manager ▾</div>
+            <label>SLA</label><div class="field">8 hours</div>
+            <label>On breach</label><div class="field">Notify + reassign ▾</div>
+            <label>Condition (Rule Engine)</label><div class="field" style="background:var(--warning-soft);color:#a96a09">days &gt; 5 · edit…</div>
+            <label>Version pinning</label><div class="field">Running instances stay on v3 ✓</div></div>
+        </div>
+      </section>
+
+      <!-- RULE BUILDER -->
+      <section class="screen" id="rules">
+        <div style="display:flex;align-items:center"><div><h1>Rule Builder</h1><div class="sub">Business rules as data · versioned · effective-dated · no code</div></div>
+          <div style="margin-left:auto;display:flex;gap:8px"><button class="btn ghost">▶ Test sandbox</button><button class="btn ghost">Impact analysis</button><button class="btn primary">Publish v4</button></div></div>
+        <div class="row" style="margin-top:18px;align-items:flex-start">
+          <div class="card pad" style="flex:2;min-width:340px">
+            <h3>Rule: Leave Approval Routing <span class="tag">v3 active</span></h3>
+            <div class="rgroup" style="margin-top:14px">
+              <div style="font-weight:700;margin-bottom:6px">IF <span class="andor">ALL</span></div>
+              <div class="cond"><span class="sel">Leave days ▾</span><span class="sel">&gt; ▾</span><span class="sel">5</span></div>
+              <div class="cond"><span class="andor">AND</span><span class="sel">Leave type ▾</span><span class="sel">= ▾</span><span class="sel">Sick ▾</span></div>
+              <div class="rgroup" style="margin-top:8px;background:var(--surface)">
+                <div style="font-weight:700;margin-bottom:6px">OR group <span class="andor">ANY</span></div>
+                <div class="cond"><span class="sel">Location ▾</span><span class="sel">= ▾</span><span class="sel">Gurgaon ▾</span></div>
+                <div class="cond"><span class="andor">OR</span><span class="sel">Grade ▾</span><span class="sel">≥ ▾</span><span class="sel">M3 ▾</span></div>
+              </div>
+              <div style="font-weight:700;margin:12px 0 6px">THEN</div>
+              <div class="cond"><span class="sel" style="background:var(--accent-soft);color:var(--accent-600)">Require HR approval</span><span class="sel">+ Notify HRBP</span></div>
+            </div>
+          </div>
+          <div class="card pad" style="flex:1;min-width:260px">
+            <h3>Test sandbox</h3>
+            <label class="prop" style="display:block;margin-top:10px">Sample input</label>
+            <div class="field">Sick · 6 days · Gurgaon</div>
+            <button class="btn primary" style="width:100%;margin-top:12px">Run</button>
+            <div style="margin-top:14px;background:var(--success-soft);border-radius:10px;padding:12px;color:#067a55;font-size:13px"><b>Result:</b> HR approval required ✓ · HRBP notified</div>
+            <div style="margin-top:14px;color:var(--muted);font-size:12.5px">Impact: applies to <b>312</b> employees · 4 active workflows reference this rule.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- AUDIT / TIME MACHINE -->
+      <section class="screen" id="audit">
+        <h1>Audit Center · Time Machine</h1><div class="sub">Who changed what, when, and why — tamper-evident</div>
+        <div class="toolbar"><span class="chip">Entity ▾</span><span class="chip">Actor ▾</span><span class="chip">Date range ▾</span><span class="chip">Action ▾</span><span class="chip" style="margin-left:auto">⬇ Export</span></div>
+        <div class="row" style="align-items:flex-start">
+          <div class="card pad" style="flex:1;min-width:300px"><h3>Timeline</h3>
+            <div class="tl">
+              <div class="ev"><b>Salary updated</b> · Anita Rao <span class="tag">selected</span><div style="color:var(--muted);font-size:12.5px">by Priya N · 14 Jun, 11:24 · Reason: Promotion</div></div>
+              <div class="ev"><b>Role changed</b> · Vikram Shah<div style="color:var(--muted);font-size:12.5px">by Priya N · 12 Jun · Reason: Re-org</div></div>
+              <div class="ev"><b>Leave approved</b> · Meera Joshi<div style="color:var(--muted);font-size:12.5px">by Rohan K · 10 Jun</div></div>
+            </div>
+          </div>
+          <div class="card pad" style="flex:1;min-width:300px"><h3>Diff — Salary updated</h3>
+            <div class="diff"><div class="old"><div style="font-size:11px;font-weight:700">OLD</div><div style="font-size:20px;font-weight:800">₹50,000</div></div><div class="new"><div style="font-size:11px;font-weight:700">NEW</div><div style="font-size:20px;font-weight:800">₹60,000</div></div></div>
+            <div style="margin-top:14px;font-size:13px;color:var(--muted)">Changed by <b>Priya N</b> · 14 Jun 2026, 11:24 IST<br/>Reason: <b>Promotion</b> · Approved via workflow WF-204<br/>Correlation: req-9f2a · IP logged</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ACTIVITY CENTER -->
+      <section class="screen" id="activity">
+        <h1>Activity Center</h1><div class="sub">Unified, filterable feed across the platform</div>
+        <div class="toolbar"><span class="chip">All</span><span class="chip">Approvals</span><span class="chip">Payroll</span><span class="chip">Compliance</span><span class="chip">Workflow</span><span class="chip">Employee</span><span class="chip" style="margin-left:auto">⬇ Export</span></div>
+        <div class="card pad">
+          <div class="tl">
+            <div class="ev"><b>Payroll</b> · June run completed for 612 employees<div style="color:var(--muted);font-size:12.5px">1h ago</div></div>
+            <div class="ev"><b>Workflow</b> · "Leave Approval" published v3<div style="color:var(--muted);font-size:12.5px">2h ago · by Sameer (Admin)</div></div>
+            <div class="ev"><b>Compliance</b> · PF challan generated<div style="color:var(--muted);font-size:12.5px">3h ago</div></div>
+            <div class="ev"><b>Employee</b> · Meera Joshi completed onboarding<div style="color:var(--muted);font-size:12.5px">Yesterday</div></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- COMPLIANCE COMMAND CENTER -->
+      <section class="screen" id="compliance">
+        <h1>Compliance Command Center</h1><div class="sub">Proactive — alerts before deadlines, not after</div>
+        <div class="wgrid" style="margin-top:18px">
+          <div class="card pad w s4" style="text-align:center"><div class="wh">Compliance score</div><div class="gauge"><div class="in">87</div></div><div class="pill green">Healthy</div></div>
+          <div class="card pad w s4"><div class="wh">Statutory status</div>
+            <div style="display:flex;flex-direction:column;gap:10px;font-size:13.5px">
+              <div style="display:flex;justify-content:space-between">PF <span class="pill green">Filed</span></div>
+              <div style="display:flex;justify-content:space-between">ESI <span class="pill amber">Due in 3 days</span></div>
+              <div style="display:flex;justify-content:space-between">PT <span class="pill green">Filed</span></div>
+              <div style="display:flex;justify-content:space-between">LWF <span class="pill green">Filed</span></div>
+              <div style="display:flex;justify-content:space-between">TDS <span class="pill red">Missing data: 4 emp</span></div>
+            </div></div>
+          <div class="card pad w s4"><div class="wh">Upcoming deadlines</div>
+            <div style="font-size:13px;color:var(--muted);line-height:2.1">📌 ESI filing — 18 Jun<br/>📌 PF ECR — 21 Jun<br/>📌 Form 16 issue — 30 Jun<br/>⚠ 14 employees crossed PF wage ceiling</div></div>
+        </div>
+      </section>
+
+      <!-- PAYROLL CONTROL TOWER -->
+      <section class="screen" id="payroll">
+        <div style="display:flex;align-items:center"><div><h1>Payroll Control Tower</h1><div class="sub">June 2026 cycle · AI validation on</div></div><button class="btn primary" style="margin-left:auto">Continue run</button></div>
+        <div class="wgrid" style="margin-top:18px">
+          <div class="card pad w s6"><div class="wh">Run progress</div>
+            <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px"><div style="flex:1;height:10px;border-radius:6px;background:var(--border);overflow:hidden"><div style="width:72%;height:100%;background:var(--grad)"></div></div><b>72%</b></div>
+            <div style="font-size:13px;color:var(--muted)">Inputs ✓ · Calculations ✓ · Validation ⏳ · Approval ○ · Disburse ○</div></div>
+          <div class="card pad w s3"><div class="wh">Exceptions</div><div class="kpi"><div class="n" style="color:var(--danger)">6</div><div style="color:var(--muted);font-size:13px">need review</div></div></div>
+          <div class="card pad w s3"><div class="wh">Warnings</div><div class="kpi"><div class="n" style="color:var(--warning)">12</div><div style="color:var(--muted);font-size:13px">auto-flagged</div></div></div>
+          <div class="card pad w s12"><div class="wh">🤖 AI anomaly detection</div>
+            <div style="background:var(--danger-soft);border-radius:12px;padding:14px;color:#c0392b;font-size:13.5px;margin-bottom:10px"><b>Potential anomaly:</b> Karan Desai — salary changed ₹50,000 → ₹5,00,000 (10× jump). Likely a data-entry error. <a style="color:var(--accent-600);font-weight:700;cursor:pointer">Review</a></div>
+            <div style="background:var(--warning-soft);border-radius:12px;padding:14px;color:#a96a09;font-size:13.5px">3 employees have ₹0 net pay — missing bank details. <a style="color:var(--accent-600);font-weight:700;cursor:pointer">Fix</a></div></div>
+        </div>
+      </section>
+
+      <!-- ORG CHART -->
+      <section class="screen" id="org">
+        <h1>Organization</h1><div class="sub">Reporting hierarchy · expand/collapse · search · drill-down</div>
+        <div class="toolbar"><div class="cmdk" style="max-width:260px">🔍 Search employee…</div><span class="chip">Department ▾</span><span class="chip">Location ▾</span></div>
+        <div class="row" style="align-items:flex-start">
+          <div class="card pad" style="flex:2;min-width:340px"><div class="tree" id="tree"></div></div>
+          <div class="card pad" id="orgDetail" style="flex:1;min-width:260px"></div>
+        </div>
+      </section>
+
+      <!-- CONFIGURATION CENTER -->
+      <section class="screen" id="config">
+        <h1>Configuration Center</h1><div class="sub">The heart of the platform — <b>configured by Admin, no developer required</b></div>
+        <div class="tiles">
+          <div class="card tile" onclick="go('forms')"><div class="ic">📝</div><b>Forms</b><span>Dynamic fields, no code</span></div>
+          <div class="card tile" onclick="go('workflow')"><div class="ic">⚡</div><b>Workflows</b><span>Approval automation</span></div>
+          <div class="card tile" onclick="go('rules')"><div class="ic">🧩</div><b>Rules</b><span>Business logic as data</span></div>
+          <div class="card tile" onclick="go('access')"><div class="ic">🔐</div><b>Roles &amp; Permissions</b><span>RBAC + ABAC</span></div>
+          <div class="card tile" onclick="go('features')"><div class="ic">🧮</div><b>Feature Flags</b><span>Enable modules instantly</span></div>
+          <div class="card tile" onclick="go('navbuilder')"><div class="ic">🧭</div><b>Navigation</b><span>Per role &amp; tenant</span></div>
+          <div class="card tile" onclick="go('branding')"><div class="ic">🎨</div><b>Branding</b><span>White-label</span></div>
+          <div class="card tile" onclick="go('tenant')"><div class="ic">🏢</div><b>Tenant Admin</b><span>Company setup</span></div>
+          <div class="card tile" onclick="go('integrations')"><div class="ic">🔌</div><b>Integrations</b><span>Connect your stack</span></div>
+          <div class="card tile" onclick="go('aisettings')"><div class="ic">🤖</div><b>AI Settings</b><span>LLM provider &amp; model · admin</span></div>
+          <div class="card tile"><div class="ic">🔔</div><b>Notifications</b><span>Channels &amp; templates</span></div>
+          <div class="card tile"><div class="ic">📄</div><b>Templates</b><span>Letters, emails, docs</span></div>
+          <div class="card tile" onclick="go('features')"><div class="ic">🧱</div><b>Modules</b><span>Compose the product</span></div>
+        </div>
+        <div class="card pad" style="margin-top:18px;background:var(--accent-soft);border-color:#C7CEFF"><b style="color:var(--accent-600)">No-code promise:</b> every item above is configured by an admin in the UI — forms, workflows, rules, roles, navigation, branding, modules — with <b>zero developer involvement and zero deployment</b>.</div>
+      </section>
+
+      <!-- FORM BUILDER -->
+      <section class="screen" id="forms">
+        <div style="display:flex;align-items:center"><div><h1>Form Builder</h1><div class="sub">Employee Onboarding Form · <span class="tag">draft</span> · no code</div></div><div style="margin-left:auto;display:flex;gap:8px"><button class="btn ghost">Preview</button><button class="btn primary">Publish</button></div></div>
+        <div class="wf" style="grid-template-columns:180px 1fr 220px">
+          <div class="card col"><div style="font-weight:700;font-size:12px;color:var(--muted);margin-bottom:10px">FIELD TYPES</div>
+            <div class="pi">🔤 Text</div><div class="pi">🔢 Number</div><div class="pi">📅 Date</div><div class="pi">▾ Dropdown</div><div class="pi">☑ Checkbox</div><div class="pi">📎 Attachment</div></div>
+          <div class="card col"><div style="font-weight:700;margin-bottom:12px">Employee Onboarding Form</div>
+            <div class="fbrow"><span class="grip">⠿</span><div style="flex:1"><b>First Name</b> <span style="color:var(--muted);font-size:12px">· Text</span></div><span class="pill red">required</span><span style="color:var(--faint);cursor:pointer">✕</span></div>
+            <div class="fbrow"><span class="grip">⠿</span><div style="flex:1"><b>Last Name</b> <span style="color:var(--muted);font-size:12px">· Text</span></div><span class="pill red">required</span><span style="color:var(--faint);cursor:pointer">✕</span></div>
+            <div class="fbrow"><span class="grip">⠿</span><div style="flex:1"><b>Joining Date</b> <span style="color:var(--muted);font-size:12px">· Date</span></div><span class="pill red">required</span><span style="color:var(--faint);cursor:pointer">✕</span></div>
+            <div class="fbrow"><span class="grip">⠿</span><div style="flex:1"><b>Department</b> <span style="color:var(--muted);font-size:12px">· Dropdown</span></div><span class="pill indigo">optional</span><span style="color:var(--faint);cursor:pointer">✕</span></div>
+            <button class="btn ghost" style="width:100%;border-style:dashed">＋ Add field (drag a type here)</button></div>
+          <div class="card col prop"><div style="font-weight:700;font-size:12px;color:var(--muted)">FIELD — Department</div>
+            <label>Label</label><div class="field">Department</div>
+            <label>Type</label><div class="field">Dropdown ▾</div>
+            <label>Required</label><div style="display:flex;align-items:center;gap:10px;margin-top:6px"><div class="toggle on" onclick="this.classList.toggle('on')"><i></i></div> Required</div>
+            <label>Options</label><div class="field">Platform, Sales, HR…</div></div>
+        </div>
+      </section>
+
+      <!-- ROLE & PERMISSION BUILDER -->
+      <section class="screen" id="access">
+        <div style="display:flex;align-items:center"><div><h1>Roles &amp; Permissions</h1><div class="sub">RBAC + ABAC · clone, customize, no code</div></div><div style="margin-left:auto;display:flex;gap:8px"><button class="btn ghost">Clone role</button><button class="btn primary">＋ Create role</button></div></div>
+        <div class="row" style="align-items:flex-start">
+          <div class="card pad" style="flex:1;min-width:220px"><div style="font-weight:700;margin-bottom:6px">Roles</div>
+            <div class="lrow" style="border:none"><span>👑 Admin</span></div>
+            <div class="lrow"><span style="font-weight:700;color:var(--accent-600)">🧑‍💼 HR Manager</span><span class="tcount" style="margin-left:auto">selected</span></div>
+            <div class="lrow"><span>👔 Manager</span></div>
+            <div class="lrow"><span>🙋 Employee</span></div>
+            <div class="lrow"><span>💳 Payroll Officer</span></div></div>
+          <div class="card pad" style="flex:2;min-width:340px"><div style="display:flex;align-items:center"><div style="font-weight:700">HR Manager — permissions</div><div class="cmdk" style="max-width:200px;margin-left:auto">🔍 Search permission…</div></div>
+            <div class="matrix" style="margin-top:8px">
+              <div><span class="yes">✓</span> View Employee</div>
+              <div><span class="yes">✓</span> Edit Employee</div>
+              <div><span class="yes">✓</span> Approve Leave</div>
+              <div><span class="yes">✓</span> View Payroll</div>
+              <div><span class="no">✗</span> Run Payroll <span style="margin-left:auto;color:var(--muted);font-size:12px">ABAC scope: own BU only</span></div>
+              <div><span class="yes">✓</span> Create Workflow</div>
+              <div><span class="yes">✓</span> Publish Workflow</div>
+              <div><span class="no">✗</span> Manage Tenant Settings</div>
+            </div></div>
+        </div>
+      </section>
+
+      <!-- TENANT ADMINISTRATION -->
+      <section class="screen" id="tenant">
+        <h1>Tenant Administration</h1><div class="sub">Multi-tenant SaaS — each tenant fully isolated &amp; self-configured</div>
+        <div class="wgrid" style="margin-top:18px">
+          <div class="card pad w s6"><div class="wh">Company profile</div><div style="font-size:13.5px;line-height:2.1">Tenant: <b>Acme Corp</b><br/>Tenant ID: <b>acme-in-001</b><br/>Plan: <span class="pill indigo">Enterprise</span> · Status: <span class="pill green">Active</span><br/>Region: India (Mumbai)</div></div>
+          <div class="card pad w s6"><div class="wh">Localization &amp; country</div><div style="font-size:13.5px;line-height:2.1">Country: India · Currency: ₹ INR<br/>Languages: English, हिन्दी<br/>Time zone: IST (UTC+5:30)<br/>Statutory: PF, ESI, PT, LWF, TDS</div></div>
+          <div class="card pad w s3"><div class="wh">Business Units</div><div style="font-size:13px;color:var(--muted);line-height:2">Technology<br/>Sales<br/>Corporate</div></div>
+          <div class="card pad w s3"><div class="wh">Departments</div><div style="font-size:13px;color:var(--muted);line-height:2">Platform · Product<br/>HR · Finance<br/>Sales</div></div>
+          <div class="card pad w s3"><div class="wh">Locations</div><div style="font-size:13px;color:var(--muted);line-height:2">Bengaluru<br/>Gurgaon<br/>Mumbai</div></div>
+          <div class="card pad w s3"><div class="wh">Working days &amp; fiscal</div><div style="font-size:13px;color:var(--muted);line-height:2">Mon–Fri · 9h/day<br/>FY: Apr–Mar</div></div>
+        </div>
+      </section>
+
+      <!-- FEATURE MANAGEMENT -->
+      <section class="screen" id="features">
+        <h1>Feature Management</h1><div class="sub">Modular architecture — toggle capabilities per tenant, no deployment</div>
+        <div class="row" style="align-items:flex-start">
+          <div class="card pad" style="flex:1;min-width:300px"><div style="font-weight:700;margin-bottom:6px">Active modules</div>
+            <div class="lrow"><span>🧑‍🤝‍🧑 Core HR</span><span class="pill green" style="margin-left:auto">Enabled</span><div class="toggle on" onclick="this.classList.toggle('on')"><i></i></div></div>
+            <div class="lrow"><span>🌴 Leave</span><span class="pill green" style="margin-left:auto">Enabled</span><div class="toggle on" onclick="this.classList.toggle('on')"><i></i></div></div>
+            <div class="lrow"><span>🕘 Attendance</span><span class="pill green" style="margin-left:auto">Enabled</span><div class="toggle on" onclick="this.classList.toggle('on')"><i></i></div></div>
+            <div class="lrow"><span>💳 Payroll</span><span class="pill green" style="margin-left:auto">Enabled</span><div class="toggle on" onclick="this.classList.toggle('on')"><i></i></div></div>
+            <div class="lrow"><span>⚡ Workflow Studio</span><span class="pill green" style="margin-left:auto">Enabled</span><div class="toggle on" onclick="this.classList.toggle('on')"><i></i></div></div>
+            <div class="lrow"><span>🧩 Rule Engine</span><span class="pill green" style="margin-left:auto">Enabled</span><div class="toggle on" onclick="this.classList.toggle('on')"><i></i></div></div>
+            <div class="lrow"><span>✨ AI Copilot</span><span class="pill amber" style="margin-left:auto">Beta</span><div class="toggle on" onclick="this.classList.toggle('on')"><i></i></div></div></div>
+          <div class="card pad" style="flex:1;min-width:300px"><div style="font-weight:700;margin-bottom:6px;color:var(--muted)">Available (future phases — disabled)</div>
+            <div class="lrow" style="opacity:.55"><span>🧑‍💼 Recruitment / ATS</span><span class="pill" style="margin-left:auto;background:var(--border);color:var(--muted)">Disabled</span><div class="toggle" onclick="this.classList.toggle('on')"><i></i></div></div>
+            <div class="lrow" style="opacity:.55"><span>🎓 LMS</span><span class="pill" style="margin-left:auto;background:var(--border);color:var(--muted)">Disabled</span><div class="toggle" onclick="this.classList.toggle('on')"><i></i></div></div>
+            <div class="lrow" style="opacity:.55"><span>💻 Assets</span><span class="pill" style="margin-left:auto;background:var(--border);color:var(--muted)">Disabled</span><div class="toggle" onclick="this.classList.toggle('on')"><i></i></div></div>
+            <div class="lrow" style="opacity:.55"><span>📈 Workforce Planning</span><span class="pill" style="margin-left:auto;background:var(--border);color:var(--muted)">Disabled</span><div class="toggle" onclick="this.classList.toggle('on')"><i></i></div></div></div>
+        </div>
+      </section>
+
+      <!-- INTEGRATION HUB -->
+      <section class="screen" id="integrations">
+        <h1>Integration Hub</h1><div class="sub">Enterprise connectivity · plug-and-play connectors</div>
+        <div class="intg">
+          <div class="card icard"><div class="top"><div class="lg">💬</div><div><b>Microsoft Teams</b><div style="color:var(--muted);font-size:12px">Notifications</div></div><span class="pill green" style="margin-left:auto">Connected</span></div><div style="color:var(--faint);font-size:12px">Last sync 2m ago · Healthy</div></div>
+          <div class="card icard"><div class="top"><div class="lg">🟣</div><div><b>Slack</b><div style="color:var(--muted);font-size:12px">Notifications</div></div><span class="pill green" style="margin-left:auto">Connected</span></div><div style="color:var(--faint);font-size:12px">Last sync 5m ago · Healthy</div></div>
+          <div class="card icard"><div class="top"><div class="lg">🔵</div><div><b>Google Workspace</b><div style="color:var(--muted);font-size:12px">Directory · SSO</div></div><span class="pill green" style="margin-left:auto">Connected</span></div><div style="color:var(--faint);font-size:12px">Last sync 1h ago · Healthy</div></div>
+          <div class="card icard"><div class="top"><div class="lg">🛡️</div><div><b>Azure AD</b><div style="color:var(--muted);font-size:12px">SSO · SCIM</div></div><span class="pill green" style="margin-left:auto">Connected</span></div><div style="color:var(--faint);font-size:12px">Provisioning active · Healthy</div></div>
+          <div class="card icard"><div class="top"><div class="lg">🕘</div><div><b>ZKTeco</b><div style="color:var(--muted);font-size:12px">Biometric attendance</div></div><span class="pill amber" style="margin-left:auto">Pending</span></div><div style="color:var(--faint);font-size:12px">Last sync 12m ago · Re-auth soon</div></div>
+          <div class="card icard"><div class="top"><div class="lg">🔒</div><div><b>eSSL</b><div style="color:var(--muted);font-size:12px">Biometric device</div></div><span class="pill red" style="margin-left:auto">Disconnected</span></div><div style="color:var(--faint);font-size:12px">Not configured</div></div>
+          <div class="card icard"><div class="top"><div class="lg">🟢</div><div><b>WhatsApp</b><div style="color:var(--muted);font-size:12px">Notifications</div></div><span class="pill green" style="margin-left:auto">Connected</span></div><div style="color:var(--faint);font-size:12px">Last sync 8m ago · Healthy</div></div>
+          <div class="card icard"><div class="top"><div class="lg">🟦</div><div><b>SAP</b><div style="color:var(--muted);font-size:12px">Finance export</div></div><span class="pill red" style="margin-left:auto">Disconnected</span></div><div style="color:var(--faint);font-size:12px">Auth expired · re-connect</div></div>
+          <div class="card icard"><div class="top"><div class="lg">📗</div><div><b>QuickBooks</b><div style="color:var(--muted);font-size:12px">Accounting</div></div><span class="pill amber" style="margin-left:auto">Pending</span></div><div style="color:var(--faint);font-size:12px">Awaiting approval</div></div>
+        </div>
+      </section>
+
+      <!-- NAVIGATION BUILDER -->
+      <section class="screen" id="navbuilder">
+        <h1>Navigation Builder</h1><div class="sub">Dynamic, role-based &amp; tenant-specific navigation — drag, hide, rename</div>
+        <div class="row" style="align-items:flex-start">
+          <div class="card pad" style="flex:1;min-width:300px"><div style="display:flex;align-items:center;margin-bottom:8px"><b>Menu</b><span class="chip" style="margin-left:auto">Role: HR ▾</span></div>
+            <div class="fbrow"><span class="grip">⠿</span>🏠 Dashboard <span style="margin-left:auto;color:var(--faint)">✎ &nbsp; ⦰</span></div>
+            <div class="fbrow"><span class="grip">⠿</span>👥 People <span style="margin-left:auto;color:var(--faint)">✎ &nbsp; ⦰</span></div>
+            <div class="fbrow"><span class="grip">⠿</span>🌴 Leave <span style="margin-left:auto;color:var(--faint)">✎ &nbsp; ⦰</span></div>
+            <div class="fbrow"><span class="grip">⠿</span>💳 Payroll <span style="margin-left:auto;color:var(--faint)">✎ &nbsp; ⦰</span></div>
+            <div class="fbrow"><span class="grip">⠿</span>🛡️ Compliance <span style="margin-left:auto;color:var(--faint)">✎ &nbsp; ⦰</span></div>
+            <div class="fbrow" style="opacity:.5"><span class="grip">⠿</span>🗂️ Organization <span style="margin-left:auto;color:var(--faint)">hidden</span></div></div>
+          <div class="card pad" style="flex:1;min-width:260px"><b>How it works</b>
+            <ul style="margin:12px 0 0 18px;color:var(--muted);font-size:13.5px;line-height:2"><li>Each role gets its own menu</li><li>Each tenant can show different modules</li><li>Driven by feature flags + entitlements</li><li>No deployment — changes apply instantly</li></ul>
+            <div style="margin-top:14px;background:var(--accent-soft);border-radius:10px;padding:12px;color:var(--accent-600);font-size:13px"><b>Tenant A:</b> Dashboard · People · Leave · Payroll<br/><b>Tenant B:</b> Dashboard · People · Compliance · Workflows</div></div>
+        </div>
+      </section>
+
+      <!-- BRANDING / WHITE-LABEL -->
+      <section class="screen" id="branding">
+        <h1>Branding &amp; White-Label</h1><div class="sub">Make the platform yours — per tenant, live preview</div>
+        <div class="row" style="align-items:flex-start">
+          <div class="card pad" style="flex:1;min-width:300px">
+            <label class="prop">Company logo</label><div class="field">acme-logo.svg · <span style="color:var(--accent-600);cursor:pointer">Upload</span></div>
+            <label class="prop">Primary color</label><div style="display:flex;gap:10px;align-items:center;margin-top:6px"><div class="swatch" style="background:#6366F1;outline:2px solid var(--accent);outline-offset:2px"></div><div class="swatch" style="background:#0EA5E9"></div><div class="swatch" style="background:#10B981"></div><div class="swatch" style="background:#F97316"></div><div class="swatch" style="background:#EC4899"></div></div>
+            <label class="prop">Theme</label><div class="field">Light + Dark ▾</div>
+            <label class="prop">Custom domain</label><div class="field">hr.acme.com · <span style="color:var(--success)">✓ verified</span></div>
+            <label class="prop">Email branding</label><div class="field">people@acme.com · <span style="color:var(--success)">DKIM ✓</span></div></div>
+          <div class="card pad" style="flex:1;min-width:280px"><b>Live preview</b>
+            <div style="margin-top:12px;border:1px solid var(--border);border-radius:12px;overflow:hidden">
+              <div style="background:var(--grad);color:#fff;padding:14px 16px;font-weight:700">⬢ Acme HR</div>
+              <div style="padding:16px"><span class="btn primary">Primary action</span><div style="margin-top:12px;color:var(--muted);font-size:13px">Your logo, colors, domain &amp; emails — applied instantly per tenant.</div></div></div></div>
+        </div>
+      </section>
+
+      <!-- GLOBAL SEARCH RESULTS -->
+      <section class="screen" id="search">
+        <h1>Search results</h1><div class="sub">for “<b>Anita</b>” · across the whole platform</div>
+        <div class="card pad" style="margin-top:18px">
+          <div class="pglabel" style="padding-left:0">Employee</div>
+          <div class="sres" onclick="go('people')"><div class="av" style="background:#6366F1">AR</div><div><b>Anita Rao</b><div style="color:var(--muted);font-size:12px">Engineer · Platform · EMP-1042</div></div><span class="pill green" style="margin-left:auto">Active</span></div>
+          <div class="pglabel" style="padding-left:0;margin-top:10px">Leave request</div>
+          <div class="sres" onclick="go('approvals')">🌴 <div><b>Anita — Sick Leave</b><div style="color:var(--muted);font-size:12px">16–18 Jun · pending approval</div></div></div>
+          <div class="pglabel" style="padding-left:0;margin-top:10px">Workflow</div>
+          <div class="sres" onclick="go('workflow')">⚡ <div><b>Anita Onboarding</b><div style="color:var(--muted);font-size:12px">Workflow instance · completed</div></div></div>
+          <div class="pglabel" style="padding-left:0;margin-top:10px">Report</div>
+          <div class="sres">📊 <div><b>Anita — Attendance Summary</b><div style="color:var(--muted);font-size:12px">Last 90 days · 96%</div></div></div>
+        </div>
+      </section>
+
+      <!-- AI MODEL SETTINGS (admin only) -->
+      <section class="screen" id="aisettings">
+        <h1>AI Model Settings <span class="tag">admin only</span></h1><div class="sub">Choose the LLM provider &amp; model per use-case — pluggable, no code</div>
+        <div class="banner2" style="margin-top:16px">🔒 Only <b>Admins</b> can change AI models. Changes apply tenant-wide and are audited (old → new).</div>
+        <div class="row" style="align-items:flex-start">
+          <div class="card pad" style="flex:1;min-width:300px"><div style="font-weight:700;margin-bottom:8px">Providers</div>
+            <div class="lrow"><span>✦ Anthropic Claude</span><span class="pill green" style="margin-left:auto">Active</span><div class="toggle on" onclick="this.classList.toggle('on')"><i></i></div></div>
+            <div class="lrow"><span>◍ OpenAI GPT</span><span class="pill" style="margin-left:auto;background:var(--border);color:var(--muted)">Available</span><div class="toggle" onclick="this.classList.toggle('on')"><i></i></div></div>
+            <div class="lrow"><span>✸ Google Gemini</span><span class="pill" style="margin-left:auto;background:var(--border);color:var(--muted)">Available</span><div class="toggle" onclick="this.classList.toggle('on')"><i></i></div></div>
+            <div style="font-size:12px;color:var(--muted);margin-top:10px">Bring-your-own API key per provider · keys stored in Key Vault.</div></div>
+          <div class="card pad" style="flex:2;min-width:340px"><div style="font-weight:700;margin-bottom:8px">Model per use-case</div>
+            <div style="display:flex;flex-direction:column;gap:12px;font-size:13.5px">
+              <div style="display:flex;align-items:center;gap:10px">HR Copilot (Q&amp;A)<div class="field" style="margin-left:auto;min-width:210px;justify-content:space-between">Claude Opus 4.8 <span>▾</span></div></div>
+              <div style="display:flex;align-items:center;gap:10px">Quick lookup / classify<div class="field" style="margin-left:auto;min-width:210px;justify-content:space-between">Claude Haiku 4.5 <span>▾</span></div></div>
+              <div style="display:flex;align-items:center;gap:10px">Report generation<div class="field" style="margin-left:auto;min-width:210px;justify-content:space-between">Claude Sonnet 4.6 <span>▾</span></div></div>
+              <div style="display:flex;align-items:center;gap:10px">Fallback model<div class="field" style="margin-left:auto;min-width:210px;justify-content:space-between">OpenAI GPT (family) <span>▾</span></div></div>
+            </div>
+            <div style="font-size:12px;color:var(--muted);margin-top:12px">Dropdowns list models from the enabled providers (Claude: Opus / Sonnet / Haiku · OpenAI: GPT family · Gemini: Pro / Flash). Catalog is admin-curated; guardrails (grounding, citations, tenant isolation) apply to every model.</div>
+            <button class="btn primary" style="margin-top:14px">Save model settings</button></div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</div>
+
+<!-- COMMAND PALETTE -->
+<div class="overlay" id="cmd" onclick="if(event.target===this)closeCmd()">
+  <div class="palette">
+    <div class="pin">🔍 <input id="cmdInput" placeholder="Search or run a command…" oninput="filterCmd(this.value)" autocomplete="off"/><kbd style="font-size:11px;color:var(--faint)">esc</kbd></div>
+    <div id="cmdList"></div>
+  </div>
+</div>
+
+<!-- WIDGET CATALOG -->
+<div class="overlay" id="catalog" onclick="if(event.target===this)closeCatalog()">
+  <div class="modal">
+    <div class="mh">Dashboard widget catalog <span style="margin-left:auto;cursor:pointer" onclick="closeCatalog()">✕</span></div>
+    <div class="mb">
+      <div style="font-size:12.5px;color:var(--muted);margin:6px 0 4px">Toggle widgets on/off · drag to reorder on the dashboard · saved per role &amp; tenant.</div>
+      <div class="lrow"><span>🕘 Attendance</span><div class="toggle on" onclick="this.classList.toggle('on')" style="margin-left:auto"><i></i></div></div>
+      <div class="lrow"><span>🛡️ Compliance</span><div class="toggle on" onclick="this.classList.toggle('on')" style="margin-left:auto"><i></i></div></div>
+      <div class="lrow"><span>💳 Payroll health</span><div class="toggle on" onclick="this.classList.toggle('on')" style="margin-left:auto"><i></i></div></div>
+      <div class="lrow"><span>✅ Approval queue</span><div class="toggle on" onclick="this.classList.toggle('on')" style="margin-left:auto"><i></i></div></div>
+      <div class="lrow"><span>🎂 Birthdays</span><div class="toggle" onclick="this.classList.toggle('on')" style="margin-left:auto"><i></i></div></div>
+      <div class="lrow"><span>📉 Attrition</span><div class="toggle" onclick="this.classList.toggle('on')" style="margin-left:auto"><i></i></div></div>
+      <div class="lrow"><span>✨ Joiners</span><div class="toggle on" onclick="this.classList.toggle('on')" style="margin-left:auto"><i></i></div></div>
+      <div class="lrow"><span>↘ Exits</span><div class="toggle on" onclick="this.classList.toggle('on')" style="margin-left:auto"><i></i></div></div>
+      <div class="lrow"><span>✨ AI insight</span><div class="toggle on" onclick="this.classList.toggle('on')" style="margin-left:auto"><i></i></div></div>
+      <button class="btn primary" style="width:100%;margin-top:14px" onclick="closeCatalog()">Done</button>
+    </div>
+  </div>
+</div>
+
+<!-- AI ASSISTANT -->
+<button class="aifab" onclick="toggleAI()">✨ Ask HR AI</button>
+<div class="aipanel" id="aipanel">
+  <div class="aihead"><div class="logo" style="width:30px;height:30px">✨</div><div><b>HR AI</b><div style="font-size:11px;color:var(--muted)">Your built-in People Ops coworker</div></div><button class="iconbtn" style="margin-left:auto" onclick="toggleAI()">✕</button></div>
+  <div class="aibody" id="aibody">
+    <div class="bub ai">Hi Priya 👋 I can answer HR/payroll/policy questions, look up employees, draft reports, or even build a workflow. Try one:</div>
+    <div class="chips">
+      <span class="sugg" onclick="ask('Why did attendance drop?')">Why did attendance drop?</span>
+      <span class="sugg" onclick="ask('Show pending approvals')">Show pending approvals</span>
+      <span class="sugg" onclick="ask('Generate attrition report')">Generate attrition report</span>
+      <span class="sugg" onclick="ask('Show payroll anomalies')">Show payroll anomalies</span>
+      <span class="sugg" onclick="ask('Find employees without bank details')">Find employees without bank details</span>
+      <span class="sugg" onclick="ask('Create leave workflow')">Create leave workflow</span>
+    </div>
+  </div>
+  <div class="aifoot"><input placeholder="Ask anything…  e.g. ‘employees with attendance &lt; 85%’" onkeydown="if(event.key==='Enter'){ask(this.value);this.value=''}"/></div>
+</div>
+
+<script>
+/* ---------- metadata-driven nav + dashboards (no hardcoding) ---------- */
+const SCREENS = {dash:'Dashboard',people:'People',leave:'Leave',approvals:'Approvals',workflow:'Workflow Studio',rules:'Rule Builder',audit:'Audit Center',activity:'Activity',compliance:'Compliance',payroll:'Payroll',org:'Organization',config:'Configuration',forms:'Form Builder',access:'Roles',tenant:'Tenant Admin',features:'Feature Flags',integrations:'Integrations',navbuilder:'Navigation',branding:'Branding',search:'Search',aisettings:'AI Settings'};
+const ROLES = {
+  hr:{ic:'🧑‍💼',name:'HR',title:'HR Dashboard',sub:'Headcount, exceptions, approvals & compliance.',
+     nav:[['main','dash','dash'],['main','People','people'],['main','Leave','leave'],['main','Approvals·3','approvals'],['plat','Workflow Studio·ai','workflow'],['plat','Rule Builder','rules'],['plat','Compliance','compliance'],['plat','Payroll','payroll'],['plat','Audit Center','audit'],['plat','Activity','activity'],['plat','Organization','org'],['cfg','Configuration','config'],['cfg','Feature Flags','features'],['cfg','Branding','branding']],
+     widgets:['kpis','approvalsQ','compliance','attendanceTrend','joinersExits','aiInsight']},
+  manager:{ic:'👔',name:'Manager',title:'Manager Dashboard',sub:'Your team — attendance, approvals & wellbeing.',
+     nav:[['main','dash','dash'],['main','My Team','people'],['main','Approvals·3','approvals'],['main','Team Leave','leave'],['plat','Activity','activity']],
+     widgets:['teamAttendance','approvalsQ','teamCalendar','slaAlerts','birthdays','aiInsight']},
+  employee:{ic:'🙋',name:'Employee',title:'My Dashboard',sub:'Everything you need, in one place.',
+     nav:[['main','dash','dash'],['main','Apply Leave','leave'],['main','Activity','activity']],
+     widgets:['myLeave','myAttendance','holidays','payslip','announcements','aiInsight']},
+  payroll:{ic:'💳',name:'Payroll',title:'Payroll Dashboard',sub:'Run status, statutory filings & exceptions.',
+     nav:[['main','dash','dash'],['plat','Payroll Tower','payroll'],['plat','Compliance','compliance'],['plat','Audit Center','audit']],
+     widgets:['payrollHealth','statutory','payrollExceptions','attendanceTrend']},
+  admin:{ic:'🛡️',name:'Admin',title:'Admin Dashboard',sub:'Tenant health, workflows, integrations & audit.',
+     nav:[['main','dash','dash'],['plat','Workflow Studio·ai','workflow'],['plat','Rule Builder','rules'],['plat','Audit Center','audit'],['plat','Activity','activity'],['plat','Organization','org'],['cfg','Configuration','config'],['cfg','Form Builder','forms'],['cfg','Roles','access'],['cfg','Tenant Admin','tenant'],['cfg','Feature Flags','features'],['cfg','Navigation','navbuilder'],['cfg','Branding','branding'],['cfg','Integrations','integrations'],['cfg','AI Settings','aisettings']],
+     widgets:['tenantHealth','userActivity','workflowFailures','integrations','auditEvents','aiInsight']}
+};
+let role='hr', order=[...ROLES.hr.widgets];
+
+const W = {
+  kpis:()=>`<div class="card pad w"><div class="wh"><span class="grip">⠿</span>Headcount<button class="hide" onclick="hideW(event)">✕</button></div><div class="kpi"><div class="ic" style="background:var(--accent-soft)">👥</div><div class="n">612</div><span class="up">▲ 8 this month</span></div></div>
+    <div class="card pad w"><div class="wh"><span class="grip">⠿</span>Present today<button class="hide" onclick="hideW(event)">✕</button></div><div class="kpi"><div class="ic" style="background:var(--success-soft)">🟢</div><div class="n">548</div><span class="up">89.5%</span></div></div>
+    <div class="card pad w"><div class="wh"><span class="grip">⠿</span>Joiners (Jun)<button class="hide" onclick="hideW(event)">✕</button></div><div class="kpi"><div class="ic" style="background:var(--accent-soft)">✨</div><div class="n">8</div><span class="up">on track</span></div></div>
+    <div class="card pad w"><div class="wh"><span class="grip">⠿</span>Exits (Jun)<button class="hide" onclick="hideW(event)">✕</button></div><div class="kpi"><div class="ic" style="background:var(--danger-soft)">↘</div><div class="n">3</div><span class="down">attrition 0.5%</span></div></div>`,
+  approvalsQ:()=>`<div class="card pad w s6"><div class="wh"><span class="grip">⠿</span>Approval queue<button class="hide" onclick="hideW(event)">✕</button></div>
+    <div style="display:flex;flex-direction:column;gap:10px;font-size:13.5px">
+      <div style="display:flex;align-items:center;gap:10px"><div class="av" style="background:#6366F1">AR</div>Anita · Sick 3d<span class="pill green" style="margin-left:auto">SLA 6h</span></div>
+      <div style="display:flex;align-items:center;gap:10px"><div class="av" style="background:#0EA5E9">VS</div>Vikram · Regularize<span class="pill red" style="margin-left:auto">SLA 1h</span></div>
+      <div style="display:flex;align-items:center;gap:10px"><div class="av" style="background:#10B981">MJ</div>Meera · ₹4,200<span class="pill green" style="margin-left:auto">SLA 2d</span></div>
+    </div></div>`,
+  compliance:()=>`<div class="card pad w s3" style="text-align:center"><div class="wh"><span class="grip">⠿</span>Compliance<button class="hide" onclick="hideW(event)">✕</button></div><div class="gauge"><div class="in">87</div></div><span class="pill green">Healthy</span></div>`,
+  attendanceTrend:()=>`<div class="card pad w s6"><div class="wh"><span class="grip">⠿</span>Attendance — 14 days<button class="hide" onclick="hideW(event)">✕</button></div><div class="heat">${Array.from({length:42}).map((_,i)=>`<span style="opacity:${.3+Math.random()*.7}"></span>`).join('')}</div></div>`,
+  joinersExits:()=>`<div class="card pad w s3"><div class="wh"><span class="grip">⠿</span>Workforce trend<button class="hide" onclick="hideW(event)">✕</button></div><div class="bars"><div style="height:50%"></div><div style="height:62%"></div><div style="height:58%"></div><div style="height:74%;background:var(--accent)"></div><div style="height:80%"></div></div></div>`,
+  aiInsight:()=>`<div class="card pad w s12" style="background:var(--accent-soft);border-color:#C7CEFF"><div class="wh" style="color:var(--accent-600)"><span class="grip">⠿</span>✨ AI insight<button class="hide" onclick="hideW(event)">✕</button></div><div style="font-size:14px"><b>Attendance dipped 6% in Sales (Gurgaon)</b> this week — 3 reps below 80%. Possible morale issue near month-end targets. <a style="color:var(--accent-600);font-weight:700;cursor:pointer" onclick="toggleAI()">Ask AI to investigate →</a></div></div>`,
+  teamAttendance:()=>`<div class="card pad w s6"><div class="wh"><span class="grip">⠿</span>Team attendance<button class="hide" onclick="hideW(event)">✕</button></div><div class="bars"><div style="height:80%"></div><div style="height:90%"></div><div style="height:70%"></div><div style="height:95%;background:var(--accent)"></div><div style="height:85%"></div></div></div>`,
+  teamCalendar:()=>`<div class="card pad w s3"><div class="wh"><span class="grip">⠿</span>Team on leave<button class="hide" onclick="hideW(event)">✕</button></div><div style="font-size:13px;color:var(--muted);line-height:2">🌴 Anita — 16–18 Jun<br/>🌴 Sara — 20 Jun<br/>🏖 Karan — 24–26 Jun</div></div>`,
+  slaAlerts:()=>`<div class="card pad w s3"><div class="wh"><span class="grip">⠿</span>SLA alerts<button class="hide" onclick="hideW(event)">✕</button></div><div class="kpi"><div class="n" style="color:var(--danger)">1</div><span class="down">approval breaching in 1h</span></div></div>`,
+  birthdays:()=>`<div class="card pad w s3"><div class="wh"><span class="grip">⠿</span>Birthdays<button class="hide" onclick="hideW(event)">✕</button></div><div style="font-size:13px;color:var(--muted);line-height:2">🎂 Vikram — today<br/>🎂 Neha — Fri</div></div>`,
+  myLeave:()=>`<div class="card pad w s4"><div class="wh"><span class="grip">⠿</span>Leave balance<button class="hide" onclick="hideW(event)">✕</button></div><div style="display:flex;gap:14px;text-align:center"><div><div style="font-size:22px;font-weight:800">6</div><span style="color:var(--muted);font-size:12px">Casual</span></div><div><div style="font-size:22px;font-weight:800">4</div><span style="color:var(--muted);font-size:12px">Sick</span></div><div><div style="font-size:22px;font-weight:800">12</div><span style="color:var(--muted);font-size:12px">Earned</span></div></div><button class="btn primary" style="width:100%;margin-top:14px" onclick="go('leave')">Apply leave</button></div>`,
+  myAttendance:()=>`<div class="card pad w s4"><div class="wh"><span class="grip">⠿</span>This month<button class="hide" onclick="hideW(event)">✕</button></div><div class="heat" style="grid-template-columns:repeat(10,1fr)">${Array.from({length:30}).map(()=>`<span style="opacity:${.4+Math.random()*.6}"></span>`).join('')}</div><div style="color:var(--muted);font-size:12px;margin-top:8px">21 present · 2 leave · 96%</div></div>`,
+  holidays:()=>`<div class="card pad w s4"><div class="wh"><span class="grip">⠿</span>Upcoming holidays<button class="hide" onclick="hideW(event)">✕</button></div><div style="font-size:13px;color:var(--muted);line-height:2.1">🎉 Bakrid — 17 Jun<br/>🎉 Rath Yatra — 27 Jun</div></div>`,
+  payslip:()=>`<div class="card pad w s4"><div class="wh"><span class="grip">⠿</span>Latest payslip<button class="hide" onclick="hideW(event)">✕</button></div><div style="font-size:13px;color:var(--muted)">May 2026 · net ₹78,400</div><button class="btn ghost" style="width:100%;margin-top:12px">⬇ Download</button></div>`,
+  announcements:()=>`<div class="card pad w s4"><div class="wh"><span class="grip">⠿</span>Announcements<button class="hide" onclick="hideW(event)">✕</button></div><div style="font-size:13px;color:var(--muted)">📢 New WFH policy live<br/>📢 Townhall — Fri 4pm</div></div>`,
+  payrollHealth:()=>`<div class="card pad w s4" style="text-align:center"><div class="wh"><span class="grip">⠿</span>Payroll health<button class="hide" onclick="hideW(event)">✕</button></div><div class="gauge"><div class="in">92</div></div><span class="pill green">On track</span></div>`,
+  statutory:()=>W.compliance().replace('s3','s4').replace('Compliance','Statutory'),
+  payrollExceptions:()=>`<div class="card pad w s4"><div class="wh"><span class="grip">⠿</span>Exceptions<button class="hide" onclick="hideW(event)">✕</button></div><div class="kpi"><div class="n" style="color:var(--danger)">6</div><span class="down">incl. 1 AI anomaly</span></div><button class="btn ghost" style="width:100%;margin-top:10px" onclick="go('payroll')">Open control tower</button></div>`,
+  tenantHealth:()=>`<div class="card pad w s4" style="text-align:center"><div class="wh"><span class="grip">⠿</span>Tenant health<button class="hide" onclick="hideW(event)">✕</button></div><div class="gauge"><div class="in">99.9</div></div><span class="pill green">All systems go</span></div>`,
+  userActivity:()=>`<div class="card pad w s4"><div class="wh"><span class="grip">⠿</span>Active users (24h)<button class="hide" onclick="hideW(event)">✕</button></div><div class="kpi"><div class="n">438</div><span class="up">71% of staff</span></div></div>`,
+  workflowFailures:()=>`<div class="card pad w s4"><div class="wh"><span class="grip">⠿</span>Workflow failures<button class="hide" onclick="hideW(event)">✕</button></div><div class="kpi"><div class="n" style="color:var(--warning)">1</div><span class="down">Expense · retry queued</span></div></div>`,
+  integrations:()=>`<div class="card pad w s6"><div class="wh"><span class="grip">⠿</span>Integration status<button class="hide" onclick="hideW(event)">✕</button></div><div style="font-size:13px;line-height:2.1">Azure AD <span class="pill green">OK</span> · Slack <span class="pill green">OK</span> · ZKTeco device <span class="pill amber">Sync 12m ago</span> · Tally <span class="pill red">Auth expired</span></div></div>`,
+  auditEvents:()=>`<div class="card pad w s6"><div class="wh"><span class="grip">⠿</span>Recent audit events<button class="hide" onclick="hideW(event)">✕</button></div><div style="font-size:13px;color:var(--muted);line-height:2">Salary updated · Anita (Priya)<br/>Workflow published v3 · Sameer<br/>Role changed · Vikram (Priya)</div><a style="color:var(--accent-600);font-weight:700;cursor:pointer;font-size:13px" onclick="go('audit')">Open Audit Center →</a></div>`,
+};
+
+function renderNav(){
+  const r=ROLES[role]; let html='';
+  const groups={main:'Main',plat:'Platform',cfg:'Configure'};
+  ['main','plat','cfg'].forEach(g=>{
+    const items=r.nav.filter(n=>n[0]===g); if(!items.length)return;
+    html+=`<div class="navlabel">${groups[g]}</div>`;
+    items.forEach(n=>{
+      const sid=n[2], label=SCREENS[sid]||n[1].split('·')[0];
+      const badge=n[1].includes('·3')?'<span class="badge">3</span>':'';
+      const ai=n[1].includes('·ai')?'<span class="ai-tag">AI</span>':'';
+      const icons={dash:'🏠',people:'👥',leave:'🌴',approvals:'✅',workflow:'⚡',rules:'🧩',audit:'🕓',activity:'📜',compliance:'🛡️',payroll:'💳',org:'🗂️',config:'🎛️',forms:'📝',access:'🔐',tenant:'🏢',features:'🧮',integrations:'🔌',navbuilder:'🧭',branding:'🎨',search:'🔍',aisettings:'🤖'};
+      html+=`<button class="nav ${sid==='dash'?'active':''}" data-s="${sid}" onclick="go('${sid}')"><span class="ic">${icons[sid]||'•'}</span>${label}${badge}${ai}</button>`;
+    });
+  });
+  document.getElementById('navWrap').innerHTML=html;
+}
+function renderDash(){
+  const r=ROLES[role];
+  document.getElementById('dashTitle').textContent=r.title;
+  document.getElementById('dashSub').textContent=r.sub;
+  document.getElementById('widgets').innerHTML=order.map(w=>W[w]?W[w]():'').join('');
+}
+function cycleRole(){
+  const keys=Object.keys(ROLES); role=keys[(keys.indexOf(role)+1)%keys.length];
+  document.getElementById('roleIc').textContent=ROLES[role].ic;
+  document.getElementById('roleName').textContent=ROLES[role].name;
+  order=[...ROLES[role].widgets]; renderNav(); renderDash(); go('dash');
+}
+function go(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  (document.getElementById(id)||document.getElementById('dash')).classList.add('active');
+  document.querySelectorAll('.nav').forEach(n=>n.classList.toggle('active',n.dataset.s===id));
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+let editing=false;
+function toggleEdit(){editing=!editing;document.getElementById('widgets').classList.toggle('editing',editing);document.getElementById('editBtn').textContent=editing?'✓ Done':'⚙ Customize';}
+function hideW(e){e.stopPropagation();e.target.closest('.w').style.display='none';}
+/* density + theme */
+function setDensity(d,btn){document.documentElement.dataset.density=d;document.querySelectorAll('.seg button').forEach(b=>b.classList.remove('on'));btn.classList.add('on');}
+function toggleTheme(){const h=document.documentElement;h.dataset.theme=h.dataset.theme==='dark'?'light':'dark';}
+function toggleNotif(){document.getElementById('notif').classList.toggle('open');}
+/* AI */
+function toggleAI(){document.getElementById('aipanel').classList.toggle('open');}
+function ask(q){const b=document.getElementById('aibody');b.innerHTML+=`<div class="bub me">${q}</div>`;
+  const ans={'Who is absent today?':'64 employees are absent today (10.5%). Highest in Sales–Gurgaon (5). 2 are unplanned/no-show.',
+    'Why did attendance drop?':'Attendance in Sales–Gurgaon fell 6% this week. Likely drivers: month-end targets + 2 unplanned absences. It correlates with overtime up 18% last week.',
+    'Show pending approvals':'You have 3 pending: Anita (leave, SLA 6h), Vikram (regularization, SLA 1h ⚠), Meera (expense ₹4,200).',
+    'Show payroll anomalies':'1 critical: Karan Desai salary ₹50,000 → ₹5,00,000 (10× — likely error). Plus 3 employees with ₹0 net pay (missing bank details).',
+    'Find employees without bank details':'3 employees are missing bank details: Karan D, Sara T, and one new joiner. They will fail disbursement.',
+    'Generate attrition report':'Drafted “Attrition — Q2 FY26”: 0.5% monthly, highest in Sales (2.1%). Chart + CSV ready.',
+    'Create leave workflow':'I can scaffold a leave-approval workflow: Start → Manager → (if days>5) HR → End, with an 8h SLA + escalation. Open it in Workflow Studio to review.',
+    'What is the maternity policy?':'Per the Acme Employee Handbook §7.2: 26 weeks paid maternity leave (Maternity Benefit Act). Source: Handbook v4, p.18.'};
+  const acts={'Show pending approvals':[['Approve all','#'],['Open Approvals','go:approvals']],
+    'Why did attendance drop?':[['Open analysis','go:dash'],['Message managers','#']],
+    'Show payroll anomalies':[['Review in Payroll Tower','go:payroll']],
+    'Find employees without bank details':[['Open list','go:people'],['Send reminder','#']],
+    'Generate attrition report':[['Open report','#'],['Export CSV','#']],
+    'Create leave workflow':[['Open in Workflow Studio','go:workflow']],
+    'Who is absent today?':[['Flag managers','#'],['View list','go:people']]};
+  setTimeout(()=>{const a=acts[q];
+    b.innerHTML+=`<div class="bub ai">${ans[q]||'Here’s what I found across your tenant data (RAG over policies + live HR data, scoped to your permissions).'}</div>`+
+      (a?`<div style="font-size:11px;color:var(--muted);font-weight:700;margin:2px 0 -4px">RECOMMENDED ACTIONS</div><div class="chips">${a.map(x=>`<span class="sugg" onclick="${x[1].startsWith('go:')?`toggleAI();go('${x[1].slice(3)}')`:''}">▶ ${x[0]}</span>`).join('')}</div>`:'');
+    b.scrollTop=b.scrollHeight;},250);
+  b.scrollTop=b.scrollHeight;
+}
+/* command palette */
+const CMDS=[['Search','Find employee','👤','search'],['Search','Find workflow','⚡','search'],['Search','Find policy','📄','search'],['Action','Apply leave','🌴','go:leave'],['Action','Run payroll','💳','go:payroll'],['Action','Create workflow','⚡','go:workflow'],['Action','Generate report','📊','go:dash'],['AI','Show employees absent today','✨','ai:Who is absent today?'],['AI','Show pending approvals','✨','ai:Show pending approvals'],['AI','Generate attrition report','✨','ai:Generate attrition report']];
+function renderCmd(list){const groups={Search:'Search',Action:'Quick actions',AI:'Ask AI'};let h='';['Search','Action','AI'].forEach(g=>{const it=list.filter(c=>c[0]===g);if(!it.length)return;h+=`<div class="pglabel">${groups[g]}</div>`;it.forEach(c=>{h+=`<div class="pitem" onclick="runCmd('${c[3]}')">${c[2]} ${c[1]} ${c[0]==='AI'?'<span class="ai">AI</span>':'<span class="k">↵</span>'}</div>`;});});document.getElementById('cmdList').innerHTML=h;}
+function filterCmd(v){renderCmd(CMDS.filter(c=>c[1].toLowerCase().includes(v.toLowerCase())));}
+function openCmd(){document.getElementById('cmd').classList.add('open');renderCmd(CMDS);setTimeout(()=>document.getElementById('cmdInput').focus(),50);}
+function closeCmd(){document.getElementById('cmd').classList.remove('open');document.getElementById('cmdInput').value='';}
+function runCmd(a){closeCmd();if(a.startsWith('go:'))go(a.slice(3));else if(a==='search')go('search');else if(a.startsWith('ai:')){toggleAI();ask(a.slice(3));}}
+document.addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){e.preventDefault();openCmd();}if(e.key==='Escape')closeCmd();});
+/* people rows */
+const EMP=[['Anita Rao','1042','Engineer','Platform','Rohan K.','green','Active','#6366F1'],['Vikram Shah','1043','Sr. Engineer','Platform','Rohan K.','green','Active','#0EA5E9'],['Meera Joshi','1051','HR Executive','Human Resources','Priya N.','amber','On leave','#10B981'],['Karan Desai','1067','Sales Lead','Sales','Neha M.','green','Active','#F59E0B'],['Sara Thomas','1071','Designer','Product','Arjun P.','red','Notice','#8B5CF6'],['Neha Mehta','1080','Sales Manager','Sales','Priya N.','green','Active','#EC4899']];
+document.getElementById('emps').innerHTML=EMP.map(e=>`<tr><td><div class="emp"><div class="av" style="background:${e[7]}">${e[0].split(' ').map(x=>x[0]).join('')}</div><div><b>${e[0]}</b><div style="color:var(--faint);font-size:12px">EMP-${e[1]}</div></div></div></td><td>${e[2]}</td><td>${e[3]}</td><td>${e[4]}</td><td><span class="pill ${e[5]}">● ${e[6]}</span></td></tr>`).join('');
+/* widget catalog */
+function openCatalog(){document.getElementById('catalog').classList.add('open');}
+function closeCatalog(){document.getElementById('catalog').classList.remove('open');}
+/* org chart */
+const ORG={id:'1001',name:'Priya Nair',title:'Head of People',dept:'HR',loc:'Bengaluru',children:[
+  {id:'1009',name:'Rohan Kapoor',title:'Engineering Manager',dept:'Platform',loc:'Bengaluru',children:[
+    {id:'1042',name:'Anita Rao',title:'Engineer',dept:'Platform',loc:'Bengaluru'},
+    {id:'1043',name:'Vikram Shah',title:'Sr. Engineer',dept:'Platform',loc:'Bengaluru'},
+    {id:'1071',name:'Sara Thomas',title:'Designer',dept:'Product',loc:'Bengaluru'}]},
+  {id:'1080',name:'Neha Mehta',title:'Sales Manager',dept:'Sales',loc:'Gurgaon',children:[
+    {id:'1067',name:'Karan Desai',title:'Sales Lead',dept:'Sales',loc:'Gurgaon'}]},
+  {id:'1090',name:'Arjun Patel',title:'Product Lead',dept:'Product',loc:'Bengaluru',children:[]}]};
+const OMAP={};(function idx(n){OMAP[n.id]=n;(n.children||[]).forEach(idx);})(ORG);
+function initials(s){return s.split(' ').map(x=>x[0]).join('')}
+function colr(id){const c=['#6366F1','#0EA5E9','#10B981','#F59E0B','#8B5CF6','#EC4899'];return c[parseInt(id)%c.length]}
+function countDesc(n){return (n.children||[]).reduce((a,c)=>a+1+countDesc(c),0)}
+function nodeHtml(n){const has=n.children&&n.children.length;const cid='c'+n.id;
+  return `<div class="tnode"><div class="trow" id="r${n.id}" onclick="selOrg('${n.id}')">
+    <span class="tcar" ${has?`onclick="event.stopPropagation();togNode('${cid}',this)"`:''}>${has?'▾':'•'}</span>
+    <div class="av" style="background:${colr(n.id)};width:26px;height:26px;font-size:10px">${initials(n.name)}</div>
+    <div><b>${n.name}</b> <span style="color:var(--muted)">· ${n.title}</span></div>
+    ${has?`<span class="tcount">${countDesc(n)}</span>`:''}</div>
+    <div id="${cid}">${(n.children||[]).map(nodeHtml).join('')}</div></div>`;}
+function renderOrg(){document.getElementById('tree').innerHTML=nodeHtml(ORG);selOrg('1001');}
+function togNode(cid,el){const c=document.getElementById(cid);const open=c.style.display!=='none';c.style.display=open?'none':'block';el.textContent=open?'▸':'▾';}
+function selOrg(id){const n=OMAP[id];document.querySelectorAll('.trow').forEach(r=>r.classList.remove('sel'));const r=document.getElementById('r'+id);if(r)r.classList.add('sel');
+  const reports=(n.children||[]).length;
+  document.getElementById('orgDetail').innerHTML=`<div style="display:flex;align-items:center;gap:12px"><div class="av" style="background:${colr(id)};width:48px;height:48px;font-size:16px">${initials(n.name)}</div><div><h3>${n.name}</h3><div style="color:var(--muted);font-size:13px">${n.title}</div></div></div>
+    <div style="margin-top:16px;font-size:13.5px;line-height:2.2">Employee ID · <b>EMP-${n.id}</b><br/>Department · <b>${n.dept}</b><br/>Location · <b>${n.loc||'—'}</b><br/>Direct reports · <b>${reports}</b><br/>Total team · <b>${countDesc(n)}</b></div>
+    <div style="display:flex;gap:8px;margin-top:16px"><button class="btn ghost" onclick="go('people')">View profile</button><button class="btn ghost">Message</button></div>`;}
+/* init */
+renderNav();renderDash();renderOrg();
+</script>
+</body>
+</html>

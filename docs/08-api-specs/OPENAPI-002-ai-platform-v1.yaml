@@ -1,0 +1,2218 @@
+openapi: 3.0.3
+x-document-status: Approved
+x-approved-by: Bhajan Lal (Product Owner)
+x-approved-date: 2026-06-27
+x-owner: API Governance + .NET Architect
+x-created-date: 2026-06-27
+info:
+  title: HRMS AI Platform API
+  version: 1.0.0
+  description: >
+    Phase 6D OpenAPI specification for governed AI platform endpoints. Covers AI
+    conversations, stateless ask, knowledge ingestion, evaluation, deployment-bundle
+    governance, operational disablement, cache namespace rotation, DR exercise status,
+    and retention reconciliation status. The contract preserves tenant isolation,
+    RBAC/ABAC, audit, no direct AI business-state mutation, and provider independence.
+servers:
+  - url: /api/v1
+    description: Version 1 API base path
+security:
+  - bearerAuth: []
+tags:
+  - name: AI Conversations
+  - name: AI Ask
+  - name: AI Knowledge
+  - name: AI Batch
+  - name: AI Evaluation
+  - name: AI Governance
+  - name: AI Operations
+  - name: AI Cache
+  - name: AI Disaster Recovery
+  - name: AI Retention
+
+paths:
+  /ai/health:
+    get:
+      tags: [AI Operations]
+      summary: Get tenant-safe AI health summary
+      operationId: getAiHealth
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+      responses:
+        "200":
+          description: AI health summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AiHealthResponse"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+      x-permissions:
+        - AI.Operations.View
+
+  /ai/conversations:
+    get:
+      tags: [AI Conversations]
+      summary: List authorized AI conversations
+      operationId: listAiConversations
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/PageSize"
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [Active, Closed, Reset, Expired]
+        - name: purposeKey
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Conversations
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AiConversationListResponse"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+      x-permissions:
+        - AI.Conversation.View
+    post:
+      tags: [AI Conversations]
+      summary: Create a purpose-scoped AI conversation
+      operationId: createAiConversation
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateAiConversationRequest"
+      responses:
+        "201":
+          description: Conversation created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AiConversationResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/PolicyDenied"
+      x-permissions:
+        - AI.Conversation.Create
+      x-audit-events:
+        - AiConversationCreated
+
+  /ai/conversations/{conversationId}:
+    get:
+      tags: [AI Conversations]
+      summary: Get AI conversation metadata
+      operationId: getAiConversation
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/ConversationId"
+      responses:
+        "200":
+          description: Conversation metadata
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AiConversationResponse"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+      x-permissions:
+        - AI.Conversation.View
+
+  /ai/conversations/{conversationId}/messages:
+    post:
+      tags: [AI Conversations]
+      summary: Send a message to an AI conversation
+      operationId: createAiConversationMessage
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/ConversationId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateAiMessageRequest"
+      responses:
+        "200":
+          description: Governed AI response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AiAnswerResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/PolicyDenied"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+      x-permissions:
+        - AI.Conversation.Message
+      x-audit-events:
+        - AiRequestCompleted
+        - AiSafetyBlocked
+
+  /ai/conversations/{conversationId}/messages/stream:
+    post:
+      tags: [AI Conversations]
+      summary: Stream a governed AI conversation response using Server-Sent Events
+      operationId: streamAiConversationMessage
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/ConversationId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateAiMessageRequest"
+      responses:
+        "200":
+          description: SSE stream with ai.started, ai.delta, ai.citation, ai.confidence, ai.warning, ai.completed, ai.error, and ai.cancelled events
+          headers:
+            X-RateLimit-Limit:
+              $ref: "#/components/headers/RateLimitLimit"
+            X-RateLimit-Remaining:
+              $ref: "#/components/headers/RateLimitRemaining"
+            X-RateLimit-Reset:
+              $ref: "#/components/headers/RateLimitReset"
+          content:
+            text/event-stream:
+              schema:
+                type: string
+                description: Server-Sent Events stream. Each event data payload is a JSON AiStreamEvent.
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "422":
+          $ref: "#/components/responses/PolicyDenied"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+      x-permissions:
+        - AI.Conversation.Message
+      x-stream-events:
+        - ai.started
+        - ai.delta
+        - ai.citation
+        - ai.confidence
+        - ai.warning
+        - ai.completed
+        - ai.error
+        - ai.cancelled
+      x-audit-events:
+        - AiStreamStarted
+        - AiStreamCompleted
+        - AiStreamCancelled
+
+  /ai/conversations/{conversationId}/reset:
+    post:
+      tags: [AI Conversations]
+      summary: Reset active memory for a conversation
+      operationId: resetAiConversation
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/ConversationId"
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReasonRequest"
+      responses:
+        "200":
+          description: Conversation reset
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AiConversationResponse"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+      x-permissions:
+        - AI.Conversation.Reset
+      x-audit-events:
+        - AiConversationReset
+
+  /ai/ask:
+    post:
+      tags: [AI Ask]
+      summary: Submit a stateless governed AI question
+      operationId: askAi
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AiAskRequest"
+      responses:
+        "200":
+          description: Governed AI response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AiAnswerResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "422":
+          $ref: "#/components/responses/PolicyDenied"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+      x-permissions:
+        - AI.Ask
+      x-audit-events:
+        - AiRequestCompleted
+        - AiSafetyBlocked
+
+  /ai/ask/stream:
+    post:
+      tags: [AI Ask]
+      summary: Stream a stateless governed AI response using Server-Sent Events
+      operationId: streamAiAsk
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AiAskRequest"
+      responses:
+        "200":
+          description: SSE stream with governed AI response events
+          headers:
+            X-RateLimit-Limit:
+              $ref: "#/components/headers/RateLimitLimit"
+            X-RateLimit-Remaining:
+              $ref: "#/components/headers/RateLimitRemaining"
+            X-RateLimit-Reset:
+              $ref: "#/components/headers/RateLimitReset"
+          content:
+            text/event-stream:
+              schema:
+                type: string
+                description: Server-Sent Events stream. Each event data payload is a JSON AiStreamEvent.
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "422":
+          $ref: "#/components/responses/PolicyDenied"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+      x-permissions:
+        - AI.Ask
+      x-stream-events:
+        - ai.started
+        - ai.delta
+        - ai.citation
+        - ai.confidence
+        - ai.warning
+        - ai.completed
+        - ai.error
+        - ai.cancelled
+      x-audit-events:
+        - AiStreamStarted
+        - AiStreamCompleted
+        - AiStreamCancelled
+
+  /ai/batch:
+    post:
+      tags: [AI Batch]
+      summary: Execute multiple independent governed AI requests
+      operationId: executeAiBatch
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AiBatchRequest"
+      responses:
+        "200":
+          description: Batch processed with per-item results
+          headers:
+            X-RateLimit-Limit:
+              $ref: "#/components/headers/RateLimitLimit"
+            X-RateLimit-Remaining:
+              $ref: "#/components/headers/RateLimitRemaining"
+            X-RateLimit-Reset:
+              $ref: "#/components/headers/RateLimitReset"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AiBatchResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "422":
+          $ref: "#/components/responses/PolicyDenied"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-permissions:
+        - AI.Batch.Execute
+      x-audit-events:
+        - AiBatchRequested
+        - AiBatchItemCompleted
+
+  /ai/knowledge/sources:
+    get:
+      tags: [AI Knowledge]
+      summary: List AI knowledge sources
+      operationId: listAiKnowledgeSources
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/PageSize"
+        - $ref: "#/components/parameters/Search"
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [Draft, Validating, Approved, Published, Superseded, Retired]
+      responses:
+        "200":
+          description: Knowledge sources
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/KnowledgeSourceListResponse"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+      x-permissions:
+        - AI.Knowledge.View
+    post:
+      tags: [AI Knowledge]
+      summary: Register an AI knowledge source
+      operationId: createAiKnowledgeSource
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateKnowledgeSourceRequest"
+      responses:
+        "201":
+          description: Knowledge source registered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/KnowledgeSourceResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/PolicyDenied"
+      x-permissions:
+        - AI.Knowledge.Manage
+      x-audit-events:
+        - AiKnowledgeSourceRegistered
+
+  /ai/knowledge/sources/bulk:
+    post:
+      tags: [AI Knowledge]
+      summary: Register multiple AI knowledge sources
+      operationId: bulkCreateAiKnowledgeSources
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BulkKnowledgeSourceRequest"
+      responses:
+        "200":
+          description: Bulk source registration result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BulkKnowledgeOperationResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-permissions:
+        - AI.Knowledge.Manage
+      x-audit-events:
+        - AiKnowledgeBulkOperationRequested
+
+  /ai/knowledge/sources/bulk/validate:
+    post:
+      tags: [AI Knowledge]
+      summary: Validate multiple AI knowledge source versions
+      operationId: bulkValidateAiKnowledgeSourceVersions
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BulkKnowledgeVersionOperationRequest"
+      responses:
+        "202":
+          description: Bulk validation accepted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BulkKnowledgeOperationResponse"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "409":
+          $ref: "#/components/responses/Conflict"
+      x-permissions:
+        - AI.Knowledge.Manage
+      x-audit-events:
+        - AiKnowledgeBulkOperationRequested
+
+  /ai/knowledge/sources/bulk/publish:
+    post:
+      tags: [AI Knowledge]
+      summary: Publish multiple validated AI knowledge source versions
+      operationId: bulkPublishAiKnowledgeSourceVersions
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BulkKnowledgeVersionOperationRequest"
+      responses:
+        "202":
+          description: Bulk publication accepted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BulkKnowledgeOperationResponse"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/PolicyDenied"
+      x-permissions:
+        - AI.Knowledge.Publish
+      x-audit-events:
+        - AiKnowledgeBulkOperationRequested
+        - AiIndexPromotionRequested
+
+  /ai/knowledge/sources/bulk/archive:
+    post:
+      tags: [AI Knowledge]
+      summary: Archive or retire multiple AI knowledge sources
+      operationId: bulkArchiveAiKnowledgeSources
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BulkKnowledgeSourceIdsRequest"
+      responses:
+        "202":
+          description: Bulk archive accepted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BulkKnowledgeOperationResponse"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "422":
+          $ref: "#/components/responses/PolicyDenied"
+      x-permissions:
+        - AI.Knowledge.Manage
+      x-audit-events:
+        - AiKnowledgeBulkOperationRequested
+
+  /ai/knowledge/sources/bulk/metadata:
+    patch:
+      tags: [AI Knowledge]
+      summary: Update approved metadata for multiple AI knowledge sources
+      operationId: bulkUpdateAiKnowledgeSourceMetadata
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BulkKnowledgeMetadataUpdateRequest"
+      responses:
+        "200":
+          description: Bulk metadata update result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BulkKnowledgeOperationResponse"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "422":
+          $ref: "#/components/responses/PolicyDenied"
+      x-permissions:
+        - AI.Knowledge.Manage
+      x-audit-events:
+        - AiKnowledgeBulkOperationRequested
+
+  /ai/knowledge/sources/{sourceId}/versions:
+    post:
+      tags: [AI Knowledge]
+      summary: Create a new knowledge source version
+      operationId: createAiKnowledgeSourceVersion
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/SourceId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateKnowledgeVersionRequest"
+      responses:
+        "201":
+          description: Source version created and staged
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IngestionJobResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+      x-permissions:
+        - AI.Knowledge.Manage
+      x-audit-events:
+        - AiKnowledgeVersionCreated
+
+  /ai/knowledge/sources/{sourceId}/versions/{versionId}/validate:
+    post:
+      tags: [AI Knowledge]
+      summary: Validate a staged knowledge source version
+      operationId: validateAiKnowledgeSourceVersion
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/SourceId"
+        - $ref: "#/components/parameters/VersionId"
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReasonRequest"
+      responses:
+        "202":
+          description: Validation job accepted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IngestionJobResponse"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+      x-permissions:
+        - AI.Knowledge.Manage
+      x-audit-events:
+        - AiKnowledgeValidationRequested
+
+  /ai/knowledge/sources/{sourceId}/versions/{versionId}/publish:
+    post:
+      tags: [AI Knowledge]
+      summary: Publish a validated knowledge source version
+      operationId: publishAiKnowledgeSourceVersion
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/SourceId"
+        - $ref: "#/components/parameters/VersionId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PublishKnowledgeVersionRequest"
+      responses:
+        "202":
+          description: Publication and index workflow accepted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IngestionJobResponse"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/PolicyDenied"
+      x-permissions:
+        - AI.Knowledge.Publish
+      x-audit-events:
+        - AiKnowledgeVersionPublished
+        - AiIndexPromotionRequested
+
+  /ai/knowledge/ingestion-jobs/{jobId}:
+    get:
+      tags: [AI Knowledge]
+      summary: Get AI knowledge ingestion job status
+      operationId: getAiIngestionJob
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/JobId"
+      responses:
+        "200":
+          description: Ingestion job status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IngestionJobResponse"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+      x-permissions:
+        - AI.Knowledge.View
+
+  /ai/evaluations/runs:
+    get:
+      tags: [AI Evaluation]
+      summary: List AI evaluation runs
+      operationId: listAiEvaluationRuns
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/PageSize"
+        - name: useCaseKey
+          in: query
+          schema:
+            type: string
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [Queued, Running, Passed, Failed, Cancelled, Expired]
+      responses:
+        "200":
+          description: Evaluation runs
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EvaluationRunListResponse"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+      x-permissions:
+        - AI.Evaluation.View
+    post:
+      tags: [AI Evaluation]
+      summary: Start an AI evaluation run
+      operationId: startAiEvaluationRun
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateEvaluationRunRequest"
+      responses:
+        "202":
+          description: Evaluation run accepted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EvaluationRunResponse"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/PolicyDenied"
+      x-permissions:
+        - AI.Evaluation.Manage
+      x-audit-events:
+        - AiEvaluationRunStarted
+
+  /ai/evaluations/runs/{runId}:
+    get:
+      tags: [AI Evaluation]
+      summary: Get AI evaluation run details
+      operationId: getAiEvaluationRun
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/RunId"
+      responses:
+        "200":
+          description: Evaluation run details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EvaluationRunResponse"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+      x-permissions:
+        - AI.Evaluation.View
+
+  /ai/governance/bundles:
+    get:
+      tags: [AI Governance]
+      summary: List AI deployment bundles
+      operationId: listAiBundles
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/PageSize"
+        - name: lifecycleState
+          in: query
+          schema:
+            $ref: "#/components/schemas/AiBundleLifecycleState"
+      responses:
+        "200":
+          description: AI deployment bundles
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AiBundleListResponse"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+      x-permissions:
+        - AI.Governance.View
+    post:
+      tags: [AI Governance]
+      summary: Create a draft AI deployment bundle
+      operationId: createAiBundle
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateAiBundleRequest"
+      responses:
+        "201":
+          description: AI bundle created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AiBundleResponse"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "409":
+          $ref: "#/components/responses/Conflict"
+      x-permissions:
+        - AI.Governance.Manage
+      x-audit-events:
+        - AiBundleCreated
+
+  /ai/governance/bundles/{bundleId}/transitions:
+    post:
+      tags: [AI Governance]
+      summary: Transition an AI deployment bundle lifecycle state
+      operationId: transitionAiBundle
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/BundleId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AiBundleTransitionRequest"
+      responses:
+        "200":
+          description: AI bundle transitioned
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AiBundleResponse"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/PolicyDenied"
+      x-permissions:
+        - AI.Governance.Manage
+      x-audit-events:
+        - AiBundleLifecycleTransitioned
+
+  /ai/operations/status:
+    get:
+      tags: [AI Operations]
+      summary: Get AI operations status
+      operationId: getAiOperationsStatus
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+      responses:
+        "200":
+          description: AI operations status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AiOperationsStatusResponse"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+      x-permissions:
+        - AI.Operations.View
+
+  /ai/operations/disablements:
+    post:
+      tags: [AI Operations]
+      summary: Create a scoped AI emergency disablement
+      operationId: createAiDisablement
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateAiDisablementRequest"
+      responses:
+        "201":
+          description: Disablement created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AiDisablementResponse"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "409":
+          $ref: "#/components/responses/Conflict"
+      x-permissions:
+        - AI.Operations.Manage
+      x-audit-events:
+        - AiEmergencyDisablementCreated
+
+  /ai/operations/disablements/{disablementId}/release:
+    post:
+      tags: [AI Operations]
+      summary: Release a scoped AI emergency disablement
+      operationId: releaseAiDisablement
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/DisablementId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReleaseDisablementRequest"
+      responses:
+        "200":
+          description: Disablement released
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AiDisablementResponse"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+      x-permissions:
+        - AI.Operations.Manage
+      x-audit-events:
+        - AiEmergencyDisablementReleased
+
+  /ai/cache/namespaces/{namespaceId}/rotate:
+    post:
+      tags: [AI Cache]
+      summary: Rotate an AI cache namespace
+      operationId: rotateAiCacheNamespace
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - name: namespaceId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CacheNamespaceRotationRequest"
+      responses:
+        "202":
+          description: Rotation accepted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OperationalJobResponse"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "409":
+          $ref: "#/components/responses/Conflict"
+      x-permissions:
+        - AI.Cache.Manage
+      x-audit-events:
+        - AiCacheNamespaceRotationRequested
+
+  /ai/dr/exercises:
+    get:
+      tags: [AI Disaster Recovery]
+      summary: List AI DR exercises
+      operationId: listAiDrExercises
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/PageSize"
+      responses:
+        "200":
+          description: DR exercises
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DrExerciseListResponse"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+      x-permissions:
+        - AI.Operations.View
+    post:
+      tags: [AI Disaster Recovery]
+      summary: Start or record an AI DR exercise
+      operationId: createAiDrExercise
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateDrExerciseRequest"
+      responses:
+        "202":
+          description: DR exercise accepted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DrExerciseResponse"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "409":
+          $ref: "#/components/responses/Conflict"
+      x-permissions:
+        - AI.Operations.Manage
+      x-audit-events:
+        - AiDrExerciseStarted
+
+  /ai/retention/reconciliation-jobs/{jobId}:
+    get:
+      tags: [AI Retention]
+      summary: Get AI retention or restore reconciliation job status
+      operationId: getAiRetentionReconciliationJob
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/JobId"
+      responses:
+        "200":
+          description: Reconciliation job status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RetentionReconciliationJobResponse"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+      x-permissions:
+        - AI.Retention.View
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  headers:
+    RateLimitLimit:
+      description: Tenant-safe request or operation-unit limit for the current window.
+      schema:
+        type: integer
+        minimum: 0
+    RateLimitRemaining:
+      description: Tenant-safe remaining request or operation units in the current window.
+      schema:
+        type: integer
+        minimum: 0
+    RateLimitReset:
+      description: UTC epoch seconds when the current rate-limit window resets.
+      schema:
+        type: integer
+        minimum: 0
+    RetryAfter:
+      description: Seconds after which retry may be attempted.
+      schema:
+        type: integer
+        minimum: 0
+
+  parameters:
+    CorrelationId:
+      name: X-Correlation-Id
+      in: header
+      required: false
+      schema:
+        type: string
+        maxLength: 128
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: true
+      schema:
+        type: string
+        minLength: 8
+        maxLength: 128
+    Page:
+      name: page
+      in: query
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+    PageSize:
+      name: pageSize
+      in: query
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 200
+        default: 25
+    Search:
+      name: search
+      in: query
+      required: false
+      schema:
+        type: string
+        maxLength: 200
+    ConversationId:
+      name: conversationId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    SourceId:
+      name: sourceId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    VersionId:
+      name: versionId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    JobId:
+      name: jobId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    RunId:
+      name: runId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    BundleId:
+      name: bundleId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    DisablementId:
+      name: disablementId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+
+  responses:
+    ValidationError:
+      description: Validation failed
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+    Unauthenticated:
+      description: Missing or invalid authentication
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+    Forbidden:
+      description: Permission, tenant, ABAC, or policy denied
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+    NotFound:
+      description: Resource not found or not visible to caller
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+    Conflict:
+      description: Conflict, stale version, duplicate idempotency key, or invalid transition
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+    PolicyDenied:
+      description: AI policy, retention, safety, budget, evaluation, or lifecycle gate denied
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+    RateLimited:
+      description: Rate, quota, or budget limit exceeded
+      headers:
+        X-RateLimit-Limit:
+          $ref: "#/components/headers/RateLimitLimit"
+        X-RateLimit-Remaining:
+          $ref: "#/components/headers/RateLimitRemaining"
+        X-RateLimit-Reset:
+          $ref: "#/components/headers/RateLimitReset"
+        Retry-After:
+          $ref: "#/components/headers/RetryAfter"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+    ServiceUnavailable:
+      description: AI capability unavailable or degraded
+      headers:
+        Retry-After:
+          $ref: "#/components/headers/RetryAfter"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+
+  schemas:
+    ErrorEnvelope:
+      type: object
+      required: [success, message, errors]
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+        errors:
+          type: array
+          items:
+            $ref: "#/components/schemas/ErrorItem"
+        correlationId:
+          type: string
+    ErrorItem:
+      type: object
+      properties:
+        field:
+          type: string
+          nullable: true
+        code:
+          type: string
+          example: AI_POLICY_DENIED
+        message:
+          type: string
+    PageInfo:
+      type: object
+      required: [number, size, total]
+      properties:
+        number:
+          type: integer
+        size:
+          type: integer
+        total:
+          type: integer
+    ReasonRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          maxLength: 1000
+        approvalReference:
+          type: string
+          maxLength: 200
+
+    AiHealthResponse:
+      type: object
+      required: [success, data]
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        data:
+          $ref: "#/components/schemas/AiHealth"
+    AiHealth:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [Healthy, Degraded, Disabled, Unavailable]
+        degradedMode:
+          type: string
+          nullable: true
+        activeDisablementCount:
+          type: integer
+        dependencyStatus:
+          type: array
+          items:
+            $ref: "#/components/schemas/AiDependencyStatus"
+    AiDependencyStatus:
+      type: object
+      properties:
+        dependency:
+          type: string
+        status:
+          type: string
+          enum: [Healthy, Degraded, Disabled, Unavailable, Unknown]
+
+    CreateAiConversationRequest:
+      type: object
+      required: [purposeKey]
+      properties:
+        purposeKey:
+          type: string
+          maxLength: 100
+        locale:
+          type: string
+          maxLength: 20
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+    AiConversation:
+      type: object
+      properties:
+        conversationId:
+          type: string
+          format: uuid
+        purposeKey:
+          type: string
+        memoryMode:
+          type: string
+          enum: [Disabled, SessionOnly, SessionAndSummary]
+        status:
+          type: string
+          enum: [Active, Closed, Reset, Expired]
+        createdDate:
+          type: string
+          format: date-time
+        lastActivityDate:
+          type: string
+          format: date-time
+          nullable: true
+    AiConversationResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        data:
+          $ref: "#/components/schemas/AiConversation"
+    AiConversationListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/AiConversation"
+            page:
+              $ref: "#/components/schemas/PageInfo"
+
+    CreateAiMessageRequest:
+      type: object
+      required: [message]
+      properties:
+        message:
+          type: string
+          minLength: 1
+          maxLength: 8000
+        clientMessageId:
+          type: string
+          maxLength: 128
+        responseMode:
+          $ref: "#/components/schemas/AiResponseMode"
+    AiAskRequest:
+      type: object
+      required: [purposeKey, question]
+      properties:
+        purposeKey:
+          type: string
+        question:
+          type: string
+          minLength: 1
+          maxLength: 8000
+        locale:
+          type: string
+          maxLength: 20
+        responseMode:
+          $ref: "#/components/schemas/AiResponseMode"
+    AiStreamEvent:
+      type: object
+      description: JSON payload carried in the data field of a Server-Sent Event.
+      properties:
+        event:
+          type: string
+          enum: [ai.started, ai.delta, ai.citation, ai.confidence, ai.warning, ai.completed, ai.error, ai.cancelled]
+        requestId:
+          type: string
+        sequence:
+          type: integer
+        data:
+          type: object
+          additionalProperties: true
+    AiBatchRequest:
+      type: object
+      required: [requests]
+      properties:
+        requests:
+          type: array
+          minItems: 1
+          maxItems: 100
+          items:
+            $ref: "#/components/schemas/AiBatchItemRequest"
+    AiBatchItemRequest:
+      type: object
+      required: [clientRequestId, purposeKey, question]
+      properties:
+        clientRequestId:
+          type: string
+          minLength: 1
+          maxLength: 128
+        purposeKey:
+          type: string
+        question:
+          type: string
+          minLength: 1
+          maxLength: 8000
+        locale:
+          type: string
+          maxLength: 20
+        responseMode:
+          $ref: "#/components/schemas/AiResponseMode"
+    AiBatchResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/AiBatchItemResult"
+            requestedCount:
+              type: integer
+            succeededCount:
+              type: integer
+            failedCount:
+              type: integer
+    AiBatchItemResult:
+      type: object
+      properties:
+        clientRequestId:
+          type: string
+        status:
+          type: string
+          enum: [Succeeded, Failed, Refused, EscalationRequired, RateLimited, BudgetDenied]
+        answer:
+          $ref: "#/components/schemas/AiAnswer"
+        errors:
+          type: array
+          items:
+            $ref: "#/components/schemas/ErrorItem"
+    AiResponseMode:
+      type: string
+      enum: [AnswerWithCitations, DraftOnly, RetrievalOnly]
+      default: AnswerWithCitations
+    AiAnswerResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        data:
+          $ref: "#/components/schemas/AiAnswer"
+    AiAnswer:
+      type: object
+      properties:
+        answer:
+          type: string
+        responseStatus:
+          type: string
+          enum: [Answered, Refused, EscalationRequired, Degraded]
+        refusalReason:
+          type: string
+          nullable: true
+        citations:
+          type: array
+          items:
+            $ref: "#/components/schemas/AiCitation"
+        confidence:
+          $ref: "#/components/schemas/AiConfidence"
+        versions:
+          $ref: "#/components/schemas/AiResponseVersions"
+        auditReference:
+          type: string
+    AiCitation:
+      type: object
+      properties:
+        sourceId:
+          type: string
+          format: uuid
+        documentId:
+          type: string
+        section:
+          type: string
+        title:
+          type: string
+        effectiveFrom:
+          type: string
+          format: date
+          nullable: true
+        effectiveTo:
+          type: string
+          format: date
+          nullable: true
+    AiConfidence:
+      type: object
+      properties:
+        band:
+          type: string
+          enum: [High, Medium, Low, Refuse]
+        score:
+          type: number
+          format: double
+          minimum: 0
+          maximum: 1
+        citationCompleteness:
+          type: number
+          format: double
+    AiResponseVersions:
+      type: object
+      properties:
+        promptVersion:
+          type: string
+        modelRegistryVersion:
+          type: string
+        indexVersion:
+          type: string
+        safetyPolicyVersion:
+          type: string
+        memoryPolicyVersion:
+          type: string
+          nullable: true
+        cachePolicyVersion:
+          type: string
+          nullable: true
+
+    CreateKnowledgeSourceRequest:
+      type: object
+      required: [sourceType, title, classification, ownerUserId]
+      properties:
+        sourceType:
+          type: string
+          enum: [PolicyDocument, Handbook, SOP, FAQ, ComplianceReference, OtherApprovedSource]
+        title:
+          type: string
+          maxLength: 200
+        classification:
+          type: string
+          enum: [Public, Internal, Confidential, Restricted]
+        jurisdiction:
+          type: string
+          maxLength: 50
+        locale:
+          type: string
+          maxLength: 20
+        effectiveFrom:
+          type: string
+          format: date
+          nullable: true
+        effectiveTo:
+          type: string
+          format: date
+          nullable: true
+        ownerUserId:
+          type: string
+          format: uuid
+        retentionPolicyKey:
+          type: string
+          maxLength: 100
+    BulkKnowledgeSourceRequest:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          minItems: 1
+          maxItems: 100
+          items:
+            allOf:
+              - $ref: "#/components/schemas/CreateKnowledgeSourceRequest"
+              - type: object
+                required: [clientItemId]
+                properties:
+                  clientItemId:
+                    type: string
+                    maxLength: 128
+    BulkKnowledgeVersionOperationRequest:
+      type: object
+      required: [items, reason]
+      properties:
+        reason:
+          type: string
+          maxLength: 1000
+        approvalReference:
+          type: string
+          maxLength: 200
+        items:
+          type: array
+          minItems: 1
+          maxItems: 100
+          items:
+            type: object
+            required: [clientItemId, sourceId, versionId]
+            properties:
+              clientItemId:
+                type: string
+              sourceId:
+                type: string
+                format: uuid
+              versionId:
+                type: string
+                format: uuid
+              validationEvidenceReference:
+                type: string
+                nullable: true
+    BulkKnowledgeSourceIdsRequest:
+      type: object
+      required: [items, reason]
+      properties:
+        reason:
+          type: string
+          maxLength: 1000
+        approvalReference:
+          type: string
+          maxLength: 200
+        items:
+          type: array
+          minItems: 1
+          maxItems: 100
+          items:
+            type: object
+            required: [clientItemId, sourceId]
+            properties:
+              clientItemId:
+                type: string
+              sourceId:
+                type: string
+                format: uuid
+    BulkKnowledgeMetadataUpdateRequest:
+      type: object
+      required: [items, reason]
+      properties:
+        reason:
+          type: string
+          maxLength: 1000
+        approvalReference:
+          type: string
+          maxLength: 200
+        items:
+          type: array
+          minItems: 1
+          maxItems: 100
+          items:
+            type: object
+            required: [clientItemId, sourceId, metadata]
+            properties:
+              clientItemId:
+                type: string
+              sourceId:
+                type: string
+                format: uuid
+              metadata:
+                type: object
+                properties:
+                  ownerUserId:
+                    type: string
+                    format: uuid
+                  jurisdiction:
+                    type: string
+                  locale:
+                    type: string
+                  effectiveFrom:
+                    type: string
+                    format: date
+                    nullable: true
+                  effectiveTo:
+                    type: string
+                    format: date
+                    nullable: true
+                  retentionPolicyKey:
+                    type: string
+    BulkKnowledgeOperationResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/BulkKnowledgeItemResult"
+            requestedCount:
+              type: integer
+            succeededCount:
+              type: integer
+            failedCount:
+              type: integer
+    BulkKnowledgeItemResult:
+      type: object
+      properties:
+        clientItemId:
+          type: string
+        sourceId:
+          type: string
+          format: uuid
+          nullable: true
+        versionId:
+          type: string
+          format: uuid
+          nullable: true
+        jobId:
+          type: string
+          format: uuid
+          nullable: true
+        status:
+          type: string
+          enum: [Succeeded, Accepted, Failed, Skipped, PolicyDenied]
+        errors:
+          type: array
+          items:
+            $ref: "#/components/schemas/ErrorItem"
+    CreateKnowledgeVersionRequest:
+      type: object
+      required: [sourceArtifactReference, contentHash]
+      properties:
+        sourceArtifactReference:
+          type: string
+        contentHash:
+          type: string
+        reason:
+          type: string
+    PublishKnowledgeVersionRequest:
+      allOf:
+        - $ref: "#/components/schemas/ReasonRequest"
+        - type: object
+          required: [validationEvidenceReference]
+          properties:
+            validationEvidenceReference:
+              type: string
+    KnowledgeSource:
+      type: object
+      properties:
+        sourceId:
+          type: string
+          format: uuid
+        title:
+          type: string
+        sourceType:
+          type: string
+        classification:
+          type: string
+        status:
+          type: string
+          enum: [Draft, Validating, Approved, Published, Superseded, Retired]
+        currentVersionId:
+          type: string
+          format: uuid
+          nullable: true
+    KnowledgeSourceResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        data:
+          $ref: "#/components/schemas/KnowledgeSource"
+    KnowledgeSourceListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/KnowledgeSource"
+            page:
+              $ref: "#/components/schemas/PageInfo"
+    IngestionJobResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        data:
+          $ref: "#/components/schemas/OperationalJob"
+
+    CreateEvaluationRunRequest:
+      type: object
+      required: [useCaseKey, bundleId, datasetVersion, riskTier, reason]
+      properties:
+        useCaseKey:
+          type: string
+        bundleId:
+          type: string
+          format: uuid
+        datasetVersion:
+          type: string
+        riskTier:
+          type: string
+          enum: [Low, Medium, High, HighImpact]
+        reason:
+          type: string
+    EvaluationRun:
+      type: object
+      properties:
+        runId:
+          type: string
+          format: uuid
+        useCaseKey:
+          type: string
+        bundleId:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [Queued, Running, Passed, Failed, Cancelled, Expired]
+        hallucinationRate:
+          type: number
+          format: double
+          nullable: true
+        hallucinationSeverity:
+          type: string
+          nullable: true
+        promotionEligible:
+          type: boolean
+        evidenceReference:
+          type: string
+    EvaluationRunResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        data:
+          $ref: "#/components/schemas/EvaluationRun"
+    EvaluationRunListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/EvaluationRun"
+            page:
+              $ref: "#/components/schemas/PageInfo"
+
+    AiBundleLifecycleState:
+      type: string
+      enum: [Draft, Evaluation, Approved, Canary, Production, Deprecated, Retired]
+    CreateAiBundleRequest:
+      type: object
+      required: [useCaseKey, promptVersion, modelRegistryVersion, indexVersion]
+      properties:
+        useCaseKey:
+          type: string
+        promptVersion:
+          type: string
+        modelRegistryVersion:
+          type: string
+        indexVersion:
+          type: string
+        safetyPolicyVersion:
+          type: string
+        memoryPolicyVersion:
+          type: string
+        cachePolicyVersion:
+          type: string
+        evaluationPolicyVersion:
+          type: string
+        reason:
+          type: string
+    AiBundleTransitionRequest:
+      type: object
+      required: [targetState, reason]
+      properties:
+        targetState:
+          $ref: "#/components/schemas/AiBundleLifecycleState"
+        reason:
+          type: string
+        governanceDecisionReference:
+          type: string
+        rollbackBundleId:
+          type: string
+          format: uuid
+          nullable: true
+        evidenceReference:
+          type: string
+    AiBundle:
+      type: object
+      properties:
+        bundleId:
+          type: string
+          format: uuid
+        useCaseKey:
+          type: string
+        lifecycleState:
+          $ref: "#/components/schemas/AiBundleLifecycleState"
+        promptVersion:
+          type: string
+        modelRegistryVersion:
+          type: string
+        indexVersion:
+          type: string
+        rollbackBundleId:
+          type: string
+          format: uuid
+          nullable: true
+    AiBundleResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        data:
+          $ref: "#/components/schemas/AiBundle"
+    AiBundleListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/AiBundle"
+            page:
+              $ref: "#/components/schemas/PageInfo"
+
+    AiOperationsStatusResponse:
+      allOf:
+        - $ref: "#/components/schemas/AiHealthResponse"
+    CreateAiDisablementRequest:
+      type: object
+      required: [scopeType, reason, severity]
+      properties:
+        scopeType:
+          type: string
+          enum: [Global, Tenant, UseCase, Provider, Model, PromptBundle, Index, Memory, Cache]
+        scopeKey:
+          type: string
+          nullable: true
+        severity:
+          type: string
+          enum: [SEV0, SEV1, SEV2, SEV3]
+        reason:
+          type: string
+        approvalReference:
+          type: string
+          nullable: true
+        expiresAt:
+          type: string
+          format: date-time
+          nullable: true
+    ReleaseDisablementRequest:
+      type: object
+      required: [reason, validationEvidenceReference]
+      properties:
+        reason:
+          type: string
+        validationEvidenceReference:
+          type: string
+    AiDisablement:
+      type: object
+      properties:
+        disablementId:
+          type: string
+          format: uuid
+        scopeType:
+          type: string
+        scopeKey:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum: [Active, Released, Expired]
+        reason:
+          type: string
+    AiDisablementResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        data:
+          $ref: "#/components/schemas/AiDisablement"
+
+    CacheNamespaceRotationRequest:
+      type: object
+      required: [reason]
+      properties:
+        reason:
+          type: string
+        approvalReference:
+          type: string
+        incidentReference:
+          type: string
+          nullable: true
+    OperationalJob:
+      type: object
+      properties:
+        jobId:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [Queued, Running, Succeeded, Failed, Cancelled]
+        startedAt:
+          type: string
+          format: date-time
+          nullable: true
+        completedAt:
+          type: string
+          format: date-time
+          nullable: true
+        evidenceReference:
+          type: string
+          nullable: true
+    OperationalJobResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        data:
+          $ref: "#/components/schemas/OperationalJob"
+
+    CreateDrExerciseRequest:
+      type: object
+      required: [exerciseType, plannedDate, reason]
+      properties:
+        exerciseType:
+          type: string
+          enum: [Tabletop, SqlRestore, QdrantRestore, QdrantRebuild, RedisFailover, ProviderOutage, EventReplay, DeletionReappearance, FullAiRecovery]
+        plannedDate:
+          type: string
+          format: date
+        reason:
+          type: string
+    DrExercise:
+      type: object
+      properties:
+        exerciseId:
+          type: string
+          format: uuid
+        exerciseType:
+          type: string
+        status:
+          type: string
+          enum: [Planned, Running, Completed, Failed, Cancelled]
+        evidenceReference:
+          type: string
+          nullable: true
+    DrExerciseResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        data:
+          $ref: "#/components/schemas/DrExercise"
+    DrExerciseListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/DrExercise"
+            page:
+              $ref: "#/components/schemas/PageInfo"
+
+    RetentionReconciliationJobResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        data:
+          type: object
+          properties:
+            job:
+              $ref: "#/components/schemas/OperationalJob"
+            legalHoldChecked:
+              type: boolean
+            deletionTombstonesChecked:
+              type: boolean
+            affectedStoreCount:
+              type: integer

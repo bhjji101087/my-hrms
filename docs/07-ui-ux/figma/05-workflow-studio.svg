@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="560" viewBox="0 0 960 560" font-family="Segoe UI, Arial, sans-serif">
+  <rect width="960" height="560" fill="#f8fafc"/>
+  <rect x="0" y="0" width="960" height="52" fill="#1e3a5f"/>
+  <circle cx="28" cy="26" r="11" fill="#4f8cff"/><text x="46" y="31" fill="#fff" font-size="14" font-weight="700">HRMS</text>
+  <text x="790" y="31" fill="#cfe0f5" font-size="11">Sameer (Admin) ▾</text>
+  <!-- title row -->
+  <text x="40" y="86" fill="#94a3b8" font-size="11">Workflows ▸ Leave Approval</text>
+  <text x="40" y="108" fill="#0f172a" font-size="18" font-weight="700">Leave Approval</text>
+  <rect x="250" y="92" width="86" height="22" rx="11" fill="#fef9c3"/><text x="262" y="107" fill="#854d0e" font-size="11">v3 (draft)</text>
+  <rect x="610" y="88" width="90" height="30" rx="6" fill="#ffffff" stroke="#cbd5e1"/><text x="655" y="108" fill="#334155" font-size="12" text-anchor="middle">Validate</text>
+  <rect x="710" y="88" width="70" height="30" rx="6" fill="#ffffff" stroke="#cbd5e1"/><text x="745" y="108" fill="#334155" font-size="12" text-anchor="middle">Save</text>
+  <rect x="790" y="88" width="120" height="30" rx="6" fill="#4f8cff"/><text x="850" y="108" fill="#fff" font-size="12" font-weight="600" text-anchor="middle">Publish ▾</text>
+  <!-- palette -->
+  <rect x="40" y="132" width="150" height="380" rx="8" fill="#ffffff" stroke="#e2e8f0"/>
+  <text x="58" y="158" fill="#475569" font-size="12" font-weight="700">Palette</text>
+  <g font-size="12" fill="#334155">
+    <rect x="56" y="172" width="118" height="30" rx="6" fill="#eaf1ff"/><text x="68" y="192">▭ Approval</text>
+    <rect x="56" y="210" width="118" height="30" rx="6" fill="#f1f5f9"/><text x="68" y="230">◇ Decision</text>
+    <rect x="56" y="248" width="118" height="30" rx="6" fill="#f1f5f9"/><text x="68" y="268">⫶ Parallel</text>
+    <rect x="56" y="286" width="118" height="30" rx="6" fill="#f1f5f9"/><text x="68" y="306">✉ Notify</text>
+    <rect x="56" y="324" width="118" height="30" rx="6" fill="#f1f5f9"/><text x="68" y="344">⏱ Wait / SLA</text>
+    <rect x="56" y="362" width="118" height="30" rx="6" fill="#f1f5f9"/><text x="68" y="382">⚙ Action</text>
+  </g>
+  <!-- canvas -->
+  <rect x="202" y="132" width="528" height="380" rx="8" fill="#ffffff" stroke="#e2e8f0"/>
+  <rect x="232" y="300" width="70" height="40" rx="20" fill="#dcfce7" stroke="#16a34a"/><text x="267" y="325" fill="#166534" font-size="12" text-anchor="middle">Start</text>
+  <line x1="302" y1="320" x2="372" y2="320" stroke="#94a3b8" stroke-width="2" marker-end="url(#a)"/>
+  <text x="306" y="312" fill="#9a3412" font-size="10">days &gt; 5</text>
+  <rect x="372" y="296" width="96" height="48" rx="8" fill="#eaf1ff" stroke="#4f8cff"/><text x="420" y="324" fill="#1d4ed8" font-size="12" text-anchor="middle">Manager</text>
+  <line x1="468" y1="320" x2="372" y2="220" stroke="#94a3b8" stroke-width="2"/>
+  <rect x="324" y="190" width="96" height="48" rx="8" fill="#eaf1ff" stroke="#4f8cff"/><text x="372" y="218" fill="#1d4ed8" font-size="12" text-anchor="middle">HR Approval</text>
+  <line x1="420" y1="238" x2="520" y2="300" stroke="#94a3b8" stroke-width="2" marker-end="url(#a)"/>
+  <rect x="520" y="300" width="70" height="40" rx="20" fill="#fee2e2" stroke="#ef4444"/><text x="555" y="325" fill="#b91c1c" font-size="12" text-anchor="middle">End</text>
+  <text x="222" y="496" fill="#94a3b8" font-size="11">Env: Sandbox   ▶ Test with sample data        Versions: v1  v2  ●v3</text>
+  <!-- properties -->
+  <rect x="742" y="132" width="178" height="380" rx="8" fill="#ffffff" stroke="#e2e8f0"/>
+  <text x="760" y="158" fill="#475569" font-size="12" font-weight="700">Properties — HR Approval</text>
+  <text x="760" y="190" fill="#64748b" font-size="11">Approver</text>
+  <rect x="760" y="198" width="142" height="30" rx="6" fill="#f8fafc" stroke="#cbd5e1"/><text x="772" y="218" fill="#0f172a" font-size="11">Role: HR Manager ▾</text>
+  <text x="760" y="250" fill="#64748b" font-size="11">SLA</text>
+  <rect x="760" y="258" width="142" height="30" rx="6" fill="#f8fafc" stroke="#cbd5e1"/><text x="772" y="278" fill="#0f172a" font-size="11">8 hours</text>
+  <text x="760" y="310" fill="#64748b" font-size="11">Escalation</text>
+  <rect x="760" y="318" width="142" height="30" rx="6" fill="#f8fafc" stroke="#cbd5e1"/><text x="772" y="338" fill="#0f172a" font-size="11">Notify + reassign ▾</text>
+  <text x="760" y="370" fill="#64748b" font-size="11">Condition (Rule Engine)</text>
+  <rect x="760" y="378" width="142" height="44" rx="6" fill="#fff7ed" stroke="#fdba74"/><text x="772" y="398" fill="#9a3412" font-size="10">days &gt; 5</text><text x="772" y="412" fill="#9a3412" font-size="9">edit rule…</text>
+  <text x="40" y="540" fill="#94a3b8" font-size="10">Screen 5 — Workflow Studio (no-code builder · versioned · sandbox→prod) ⭐</text>
+  <defs><marker id="a" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#94a3b8"/></marker></defs>
+</svg>

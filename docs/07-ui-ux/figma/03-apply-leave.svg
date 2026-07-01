@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="420" height="720" viewBox="0 0 420 720" font-family="Segoe UI, Arial, sans-serif">
+  <rect width="420" height="720" fill="#e2e8f0"/>
+  <!-- phone frame -->
+  <rect x="40" y="20" width="340" height="680" rx="34" fill="#ffffff" stroke="#94a3b8" stroke-width="2"/>
+  <rect x="160" y="34" width="100" height="16" rx="8" fill="#cbd5e1"/>
+  <!-- app header -->
+  <rect x="40" y="62" width="340" height="56" fill="#1e3a5f"/>
+  <text x="70" y="96" fill="#ffffff" font-size="16" font-weight="700">‹ Apply Leave</text>
+  <!-- balance -->
+  <rect x="64" y="134" width="292" height="56" rx="10" fill="#eaf1ff"/>
+  <text x="80" y="158" fill="#1e3a5f" font-size="12" font-weight="700">Your balance</text>
+  <text x="80" y="178" fill="#334155" font-size="12">Casual 6   ·   Sick 4   ·   Earned 12</text>
+  <!-- form -->
+  <text x="64" y="222" fill="#475569" font-size="12">Leave type</text>
+  <rect x="64" y="232" width="292" height="40" rx="6" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="80" y="257" fill="#0f172a" font-size="13">Sick</text><text x="340" y="257" fill="#64748b" font-size="13" text-anchor="end">▾</text>
+  <text x="64" y="298" fill="#475569" font-size="12">From</text>
+  <rect x="64" y="308" width="140" height="40" rx="6" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="80" y="333" fill="#0f172a" font-size="13">16 Jun</text>
+  <text x="216" y="298" fill="#475569" font-size="12">To</text>
+  <rect x="216" y="308" width="140" height="40" rx="6" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="232" y="333" fill="#0f172a" font-size="13">18 Jun</text>
+  <text x="64" y="378" fill="#475569" font-size="12">Days</text>
+  <text x="120" y="378" fill="#0f172a" font-size="12" font-weight="700">3 (auto)</text>
+  <text x="220" y="378" fill="#475569" font-size="12">Half day</text>
+  <rect x="300" y="366" width="34" height="18" rx="9" fill="#cbd5e1"/><circle cx="309" cy="375" r="7" fill="#fff"/>
+  <text x="64" y="410" fill="#475569" font-size="12">Reason</text>
+  <rect x="64" y="420" width="292" height="60" rx="6" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="80" y="444" fill="#94a3b8" font-size="12">Fever, doctor advised rest…</text>
+  <!-- rule engine feedback -->
+  <rect x="64" y="496" width="292" height="44" rx="8" fill="#fff7ed" stroke="#fdba74"/>
+  <text x="80" y="514" fill="#9a3412" font-size="11" font-weight="700">⚠ Rule: Sick &gt; 5 days needs HR approval</text>
+  <text x="80" y="530" fill="#9a3412" font-size="10">Live from Rule Engine — this request (3d) is within limit</text>
+  <!-- approval preview -->
+  <text x="64" y="568" fill="#475569" font-size="11">Approval chain: Manager (Rohan) → done</text>
+  <!-- actions -->
+  <rect x="64" y="586" width="138" height="44" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="133" y="613" fill="#334155" font-size="13" font-weight="600" text-anchor="middle">Save draft</text>
+  <rect x="218" y="586" width="138" height="44" rx="8" fill="#4f8cff"/>
+  <text x="287" y="613" fill="#ffffff" font-size="13" font-weight="600" text-anchor="middle">Submit</text>
+  <text x="64" y="660" fill="#94a3b8" font-size="10">Screen 3 — Apply Leave (ESS, mobile-first)</text>
+</svg>

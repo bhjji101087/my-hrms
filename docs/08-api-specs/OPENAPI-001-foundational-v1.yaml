@@ -1,0 +1,2884 @@
+openapi: 3.0.3
+x-document-status: Approved
+x-approved-by: Bhajan Lal (Product Owner)
+x-approved-date: 2026-06-22
+x-owner-amendment: Provider categories are registry-driven; VectorStore supports Qdrant-first architecture
+info:
+  title: HRMS Platform Foundational API
+  version: 1.2.0
+  description: >
+    Phase 5 OpenAPI specification for the foundational HRMS platform APIs.
+    Covers tenant context, identity/RBAC/ABAC, employees, leave, workflow,
+    rules, provider management, search, notifications, and audit. Module-specific
+    APIs for attendance, payroll, compliance, AI/RAG, and later modules will be
+    documented in separate OpenAPI files.
+servers:
+  - url: /api/v1
+    description: Version 1 API base path
+security:
+  - bearerAuth: []
+tags:
+  - name: Auth
+  - name: Identity
+  - name: Tenant
+  - name: Employees
+  - name: Leave
+  - name: Workflow
+  - name: Rules
+  - name: Providers
+  - name: Search
+  - name: Notifications
+  - name: Audit
+
+paths:
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: Local login
+      operationId: login
+      security: []
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      responses:
+        "200":
+          description: Login succeeded or MFA challenge required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthTokenResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "423":
+          description: Account locked
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+      x-audit-events:
+        - AccessLog.LoginAttempt
+
+  /auth/refresh:
+    post:
+      tags: [Auth]
+      summary: Rotate refresh token and issue a new access token
+      operationId: refreshToken
+      security: []
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RefreshTokenRequest"
+      responses:
+        "200":
+          description: Token refreshed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthTokenResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+      x-audit-events:
+        - AccessLog.TokenRefresh
+
+  /auth/logout:
+    post:
+      tags: [Auth]
+      summary: Revoke current session or refresh token
+      operationId: logout
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LogoutRequest"
+      responses:
+        "200":
+          description: Logged out
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmptySuccessEnvelope"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+      x-audit-events:
+        - AccessLog.Logout
+
+  /auth/sso/{tenant}:
+    get:
+      tags: [Auth]
+      summary: Start tenant SSO login
+      operationId: startSso
+      security: []
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - name: tenant
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Tenant code or verified tenant domain key.
+      responses:
+        "302":
+          description: Redirect to tenant identity provider
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /me:
+    get:
+      tags: [Identity]
+      summary: Current user context
+      operationId: getCurrentUserContext
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+      responses:
+        "200":
+          description: Current user, tenant, roles, permissions, and ABAC attributes
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserContextResponse"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+
+  /roles:
+    get:
+      tags: [Identity]
+      summary: List tenant roles
+      operationId: listRoles
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/PageSize"
+        - $ref: "#/components/parameters/Search"
+      responses:
+        "200":
+          description: Roles
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RoleListResponse"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+      x-permissions:
+        - Roles.View
+    post:
+      tags: [Identity]
+      summary: Create tenant role
+      operationId: createRole
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RoleRequest"
+      responses:
+        "201":
+          description: Role created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RoleResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "409":
+          $ref: "#/components/responses/Conflict"
+      x-permissions:
+        - Roles.Manage
+      x-audit-events:
+        - Role.Created
+
+  /roles/{roleId}/permissions:
+    put:
+      tags: [Identity]
+      summary: Replace role permissions
+      operationId: replaceRolePermissions
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - name: roleId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RolePermissionsRequest"
+      responses:
+        "200":
+          description: Permissions replaced
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RoleResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+      x-permissions:
+        - Roles.Manage
+      x-audit-events:
+        - Role.PermissionsUpdated
+
+  /tenant/current:
+    get:
+      tags: [Tenant]
+      summary: Current tenant profile, branding, features, and provider summary
+      operationId: getCurrentTenant
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+      responses:
+        "200":
+          description: Tenant context for UI shell and runtime config
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TenantContextResponse"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+
+  /tenants/{tenantId}:
+    get:
+      tags: [Tenant]
+      summary: Get tenant administration profile
+      operationId: getTenant
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/TenantIdPath"
+      responses:
+        "200":
+          description: Tenant profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TenantResponse"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+      x-permissions:
+        - Tenant.View
+    put:
+      tags: [Tenant]
+      summary: Update tenant administration profile
+      operationId: updateTenant
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/TenantIdPath"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TenantUpdateRequest"
+      responses:
+        "200":
+          description: Tenant updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TenantResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+      x-permissions:
+        - Tenant.Manage
+      x-audit-events:
+        - Tenant.Updated
+
+  /tenants/{tenantId}/feature-flags:
+    get:
+      tags: [Tenant]
+      summary: List tenant feature flags and entitlements
+      operationId: listTenantFeatureFlags
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/TenantIdPath"
+      responses:
+        "200":
+          description: Feature flags
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FeatureFlagListResponse"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+      x-permissions:
+        - FeatureFlags.View
+
+  /tenants/{tenantId}/feature-flags/{featureKey}:
+    put:
+      tags: [Tenant]
+      summary: Enable or disable a tenant feature flag
+      operationId: updateTenantFeatureFlag
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/TenantIdPath"
+        - name: featureKey
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FeatureFlagUpdateRequest"
+      responses:
+        "200":
+          description: Feature flag updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FeatureFlagResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+      x-permissions:
+        - FeatureFlags.Manage
+      x-audit-events:
+        - FeatureFlag.Updated
+
+  /tenants/{tenantId}/branding:
+    get:
+      tags: [Tenant]
+      summary: Get tenant branding and white-label settings
+      operationId: getTenantBranding
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/TenantIdPath"
+      responses:
+        "200":
+          description: Tenant branding
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TenantBrandingResponse"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+      x-permissions:
+        - Branding.View
+    put:
+      tags: [Tenant]
+      summary: Update tenant branding and white-label settings
+      operationId: updateTenantBranding
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/TenantIdPath"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TenantBrandingRequest"
+      responses:
+        "200":
+          description: Tenant branding updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TenantBrandingResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+      x-permissions:
+        - Branding.Manage
+      x-audit-events:
+        - Branding.Updated
+
+  /tenants/{tenantId}/config-versions:
+    get:
+      tags: [Tenant]
+      summary: List tenant configuration versions
+      operationId: listTenantConfigVersions
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/TenantIdPath"
+        - name: environment
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [Sandbox, Prod]
+      responses:
+        "200":
+          description: Tenant configuration versions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TenantConfigVersionListResponse"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+      x-permissions:
+        - Config.View
+
+  /tenants/{tenantId}/config-promotions:
+    post:
+      tags: [Tenant]
+      summary: Promote tenant configuration from sandbox to production
+      operationId: promoteTenantConfig
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/TenantIdPath"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TenantConfigPromotionRequest"
+      responses:
+        "201":
+          description: Tenant configuration promoted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TenantConfigPromotionResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "409":
+          $ref: "#/components/responses/Conflict"
+      x-permissions:
+        - Config.Promote
+      x-audit-events:
+        - Config.Promoted
+
+  /employees:
+    get:
+      tags: [Employees]
+      summary: List employees
+      operationId: listEmployees
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/PageSize"
+        - $ref: "#/components/parameters/Search"
+        - $ref: "#/components/parameters/Sort"
+        - $ref: "#/components/parameters/Filter"
+        - $ref: "#/components/parameters/AsOf"
+        - name: department
+          in: query
+          schema:
+            type: string
+        - name: location
+          in: query
+          schema:
+            type: string
+        - name: status
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Employee page
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmployeeListResponse"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+      x-permissions:
+        - People.View
+      x-abac:
+        - Manager scope restricted by department/location/business unit.
+    post:
+      tags: [Employees]
+      summary: Create employee
+      operationId: createEmployee
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EmployeeCreateRequest"
+      responses:
+        "201":
+          description: Employee created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmployeeResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "409":
+          $ref: "#/components/responses/Conflict"
+      x-permissions:
+        - People.Create
+      x-audit-events:
+        - Employee.Created
+      x-domain-events:
+        - EmployeeCreated
+
+  /employees/{employeeId}:
+    get:
+      tags: [Employees]
+      summary: Get employee as of a date
+      operationId: getEmployee
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/EmployeeIdPath"
+        - $ref: "#/components/parameters/AsOf"
+      responses:
+        "200":
+          description: Employee detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmployeeResponse"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+      x-permissions:
+        - People.View
+    put:
+      tags: [Employees]
+      summary: Create an effective-dated employee change
+      operationId: updateEmployeeEffectiveDated
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/EmployeeIdPath"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EmployeeUpdateRequest"
+      responses:
+        "200":
+          description: Employee updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmployeeResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+      x-permissions:
+        - People.Update
+      x-audit-events:
+        - Employee.Updated
+      x-domain-events:
+        - EmployeeUpdated
+
+  /employees/{employeeId}/history:
+    get:
+      tags: [Employees, Audit]
+      summary: Employee effective-dated and audit history
+      operationId: getEmployeeHistory
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/EmployeeIdPath"
+      responses:
+        "200":
+          description: Employee history
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuditChangeListResponse"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+      x-permissions:
+        - People.View
+
+  /org-chart:
+    get:
+      tags: [Employees]
+      summary: Get organization tree
+      operationId: getOrgChart
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - name: rootId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: depth
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 10
+            default: 3
+        - $ref: "#/components/parameters/AsOf"
+      responses:
+        "200":
+          description: Organization tree
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrgChartResponse"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+      x-permissions:
+        - People.View
+
+  /leave/balances:
+    get:
+      tags: [Leave]
+      summary: Get leave balances
+      operationId: getLeaveBalances
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - name: employeeId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - $ref: "#/components/parameters/AsOf"
+      responses:
+        "200":
+          description: Leave balances
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LeaveBalanceListResponse"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+      x-permissions:
+        - Leave.View
+
+  /leave/types:
+    get:
+      tags: [Leave]
+      summary: List tenant-configured leave types
+      operationId: listLeaveTypes
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+      responses:
+        "200":
+          description: Leave types
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LeaveTypeListResponse"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+
+  /leave/requests:
+    get:
+      tags: [Leave]
+      summary: List leave requests
+      operationId: listLeaveRequests
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/PageSize"
+        - name: employeeId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: status
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Leave requests
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LeaveRequestListResponse"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+      x-permissions:
+        - Leave.View
+    post:
+      tags: [Leave]
+      summary: Submit leave request
+      operationId: createLeaveRequest
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LeaveRequestCreateRequest"
+      responses:
+        "201":
+          description: Leave request submitted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LeaveRequestResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "422":
+          $ref: "#/components/responses/BusinessRuleError"
+      x-permissions:
+        - Leave.Apply
+      x-audit-events:
+        - LeaveRequest.Created
+      x-domain-events:
+        - LeaveRequested
+
+  /leave/requests/{leaveRequestId}/withdraw:
+    post:
+      tags: [Leave]
+      summary: Withdraw leave request
+      operationId: withdrawLeaveRequest
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - name: leaveRequestId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReasonRequest"
+      responses:
+        "200":
+          description: Leave request withdrawn
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LeaveRequestResponse"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+      x-permissions:
+        - Leave.Apply
+      x-audit-events:
+        - LeaveRequest.Withdrawn
+      x-domain-events:
+        - LeaveWithdrawn
+
+  /workflow/tasks:
+    get:
+      tags: [Workflow]
+      summary: List workflow tasks for current user or delegate context
+      operationId: listWorkflowTasks
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/PageSize"
+        - name: assignee
+          in: query
+          schema:
+            type: string
+            enum: [me]
+            default: me
+        - name: status
+          in: query
+          schema:
+            type: string
+            default: pending
+      responses:
+        "200":
+          description: Workflow task page
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkflowTaskListResponse"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+
+  /workflow/tasks/{taskId}/decision:
+    post:
+      tags: [Workflow]
+      summary: Approve or reject a workflow task
+      operationId: decideWorkflowTask
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - name: taskId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WorkflowDecisionRequest"
+      responses:
+        "200":
+          description: Decision recorded and workflow advanced
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkflowDecisionResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+      x-audit-events:
+        - Workflow.TaskDecision
+      x-domain-events:
+        - WorkflowTaskDecided
+
+  /workflow/definitions:
+    get:
+      tags: [Workflow]
+      summary: List workflow definitions
+      operationId: listWorkflowDefinitions
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - name: key
+          in: query
+          schema:
+            type: string
+        - name: status
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Workflow definitions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkflowDefinitionListResponse"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+      x-permissions:
+        - Workflows.View
+    post:
+      tags: [Workflow]
+      summary: Save workflow definition draft
+      operationId: saveWorkflowDefinitionDraft
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WorkflowDefinitionRequest"
+      responses:
+        "201":
+          description: Draft saved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkflowDefinitionResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+      x-permissions:
+        - Workflows.Manage
+      x-audit-events:
+        - WorkflowDefinition.DraftSaved
+
+  /workflow/definitions/{definitionId}/validate:
+    post:
+      tags: [Workflow]
+      summary: Validate workflow definition
+      operationId: validateWorkflowDefinition
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - name: definitionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Validation result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationResultResponse"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+      x-permissions:
+        - Workflows.Manage
+
+  /workflow/definitions/{definitionId}/publish:
+    post:
+      tags: [Workflow]
+      summary: Publish workflow definition version
+      operationId: publishWorkflowDefinition
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - name: definitionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Published immutable version
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkflowDefinitionResponse"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+      x-permissions:
+        - Workflows.Manage
+      x-audit-events:
+        - WorkflowDefinition.Published
+      x-domain-events:
+        - WorkflowDefinitionPublished
+
+  /workflow/instances/{instanceId}:
+    get:
+      tags: [Workflow]
+      summary: Get workflow instance state and event log
+      operationId: getWorkflowInstance
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - name: instanceId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Workflow instance
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkflowInstanceResponse"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /rules/rulesets:
+    get:
+      tags: [Rules]
+      summary: List rule sets
+      operationId: listRuleSets
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - name: key
+          in: query
+          schema:
+            type: string
+        - name: status
+          in: query
+          schema:
+            type: string
+        - $ref: "#/components/parameters/AsOf"
+      responses:
+        "200":
+          description: Rule sets
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RuleSetListResponse"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+      x-permissions:
+        - Rules.View
+    post:
+      tags: [Rules]
+      summary: Save rule set draft
+      operationId: saveRuleSetDraft
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RuleSetRequest"
+      responses:
+        "201":
+          description: Rule set draft saved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RuleSetResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+      x-permissions:
+        - Rules.Manage
+      x-audit-events:
+        - RuleSet.DraftSaved
+
+  /rules/rulesets/{ruleSetId}/validate:
+    post:
+      tags: [Rules]
+      summary: Validate rule set
+      operationId: validateRuleSet
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - name: ruleSetId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Validation result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationResultResponse"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+      x-permissions:
+        - Rules.Manage
+
+  /rules/rulesets/{ruleSetId}/test:
+    post:
+      tags: [Rules]
+      summary: Test rule set with sample facts
+      operationId: testRuleSet
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - name: ruleSetId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RuleTestRequest"
+      responses:
+        "200":
+          description: Rule test result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RuleTestResponse"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+      x-permissions:
+        - Rules.Manage
+
+  /rules/rulesets/{ruleSetId}/publish:
+    post:
+      tags: [Rules]
+      summary: Publish immutable rule set version
+      operationId: publishRuleSet
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - name: ruleSetId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Rule set published
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RuleSetResponse"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+      x-permissions:
+        - Rules.Manage
+      x-audit-events:
+        - RuleSet.Published
+      x-domain-events:
+        - RuleSetPublished
+
+  /providers/types:
+    get:
+      tags: [Providers]
+      summary: List provider categories
+      operationId: listProviderTypes
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+      responses:
+        "200":
+          description: Provider types
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProviderTypeListResponse"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+      x-permissions:
+        - Providers.View
+
+  /providers:
+    get:
+      tags: [Providers]
+      summary: List provider adapters by type
+      operationId: listProviders
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - name: type
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/ProviderCategory"
+      responses:
+        "200":
+          description: Providers
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProviderListResponse"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+      x-permissions:
+        - Providers.View
+
+  /providers/config:
+    get:
+      tags: [Providers]
+      summary: List current tenant provider configurations
+      operationId: listTenantProviderConfig
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - name: type
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/ProviderCategory"
+      responses:
+        "200":
+          description: Tenant provider configs
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TenantProviderConfigListResponse"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+      x-permissions:
+        - Providers.View
+    post:
+      tags: [Providers]
+      summary: Create or update tenant provider configuration
+      operationId: upsertTenantProviderConfig
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TenantProviderConfigRequest"
+      responses:
+        "200":
+          description: Provider config saved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TenantProviderConfigResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+      x-permissions:
+        - Providers.Manage
+      x-audit-events:
+        - ProviderConfig.Saved
+
+  /providers/config/{tenantProviderConfigId}/test:
+    post:
+      tags: [Providers]
+      summary: Test tenant provider configuration before activation
+      operationId: testTenantProviderConfig
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - name: tenantProviderConfigId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Test result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProviderTestResponse"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+      x-permissions:
+        - Providers.Manage
+
+  /providers/config/{tenantProviderConfigId}/activate:
+    post:
+      tags: [Providers]
+      summary: Activate tenant provider configuration
+      operationId: activateTenantProviderConfig
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - name: tenantProviderConfigId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Provider config activated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TenantProviderConfigResponse"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+      x-permissions:
+        - Providers.Manage
+      x-audit-events:
+        - ProviderConfig.Activated
+
+  /providers/health:
+    get:
+      tags: [Providers]
+      summary: Get tenant provider health
+      operationId: getProviderHealth
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - name: type
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/ProviderCategory"
+      responses:
+        "200":
+          description: Provider health
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProviderHealthListResponse"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+      x-permissions:
+        - Providers.View
+
+  /search:
+    get:
+      tags: [Search]
+      summary: Global search
+      operationId: globalSearch
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - name: q
+          in: query
+          required: true
+          schema:
+            type: string
+            minLength: 2
+        - name: type
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Grouped search results
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SearchResponse"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+
+  /notifications:
+    get:
+      tags: [Notifications]
+      summary: List current user notifications
+      operationId: listNotifications
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/PageSize"
+        - name: status
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Notifications
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotificationListResponse"
+
+  /notifications/{notificationId}/read:
+    post:
+      tags: [Notifications]
+      summary: Mark notification as read
+      operationId: markNotificationRead
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/NotificationIdPath"
+      responses:
+        "200":
+          description: Notification updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotificationResponse"
+
+  /notifications/{notificationId}/snooze:
+    post:
+      tags: [Notifications]
+      summary: Snooze notification
+      operationId: snoozeNotification
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/NotificationIdPath"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SnoozeNotificationRequest"
+      responses:
+        "200":
+          description: Notification updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotificationResponse"
+
+  /notifications/{notificationId}/pin:
+    post:
+      tags: [Notifications]
+      summary: Pin notification
+      operationId: pinNotification
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/NotificationIdPath"
+      responses:
+        "200":
+          description: Notification updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotificationResponse"
+
+  /audit/changes:
+    get:
+      tags: [Audit]
+      summary: List audit changes for Time Machine
+      operationId: listAuditChanges
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/PageSize"
+        - name: entityType
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: entityId
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Audit changes
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuditChangeListResponse"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+      x-permissions:
+        - Audit.View
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    CorrelationId:
+      name: X-Correlation-Id
+      in: header
+      required: false
+      schema:
+        type: string
+      description: Optional client correlation id. Server generates one if omitted.
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: true
+      schema:
+        type: string
+        minLength: 8
+        maxLength: 128
+      description: Required for critical mutating operations.
+    Page:
+      name: page
+      in: query
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+    PageSize:
+      name: pageSize
+      in: query
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 200
+        default: 25
+    Search:
+      name: search
+      in: query
+      required: false
+      schema:
+        type: string
+    Sort:
+      name: sort
+      in: query
+      required: false
+      schema:
+        type: string
+      description: Comma-separated sort fields, prefix with '-' for descending.
+    Filter:
+      name: filter
+      in: query
+      required: false
+      schema:
+        type: string
+      description: Structured filter expression or encoded filter key.
+    AsOf:
+      name: asOf
+      in: query
+      required: false
+      schema:
+        type: string
+        format: date
+      description: Effective-date query. Defaults to current tenant date.
+    TenantIdPath:
+      name: tenantId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    EmployeeIdPath:
+      name: employeeId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    NotificationIdPath:
+      name: notificationId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+
+  responses:
+    ValidationError:
+      description: Validation failed
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+    Unauthenticated:
+      description: Authentication required or token invalid
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+    Forbidden:
+      description: RBAC, ABAC, tenant, entitlement, or feature-flag check failed
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+    NotFound:
+      description: Resource not found or not visible in tenant scope
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+    Conflict:
+      description: Conflict or idempotency conflict
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+    BusinessRuleError:
+      description: Business rule validation failed
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+    RateLimited:
+      description: Rate limit exceeded
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+    ServerError:
+      description: Server error
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+
+  schemas:
+    SuccessEnvelope:
+      type: object
+      required: [success, message, data]
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        message:
+          type: string
+        data:
+          type: object
+          additionalProperties: true
+    EmptySuccessEnvelope:
+      type: object
+      required: [success, message, data]
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        message:
+          type: string
+        data:
+          type: object
+          nullable: true
+    ErrorEnvelope:
+      type: object
+      required: [success, message, errors]
+      properties:
+        success:
+          type: boolean
+          enum: [false]
+        message:
+          type: string
+        errors:
+          type: array
+          items:
+            $ref: "#/components/schemas/ErrorItem"
+        correlationId:
+          type: string
+    ErrorItem:
+      type: object
+      properties:
+        field:
+          type: string
+          nullable: true
+        code:
+          type: string
+        message:
+          type: string
+    PageMeta:
+      type: object
+      required: [number, size, total]
+      properties:
+        number:
+          type: integer
+        size:
+          type: integer
+        total:
+          type: integer
+
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+        tenantHint:
+          type: string
+          nullable: true
+    RefreshTokenRequest:
+      type: object
+      required: [refreshToken]
+      properties:
+        refreshToken:
+          type: string
+    LogoutRequest:
+      type: object
+      properties:
+        refreshToken:
+          type: string
+          nullable: true
+        allSessions:
+          type: boolean
+          default: false
+    AuthTokenResponse:
+      type: object
+      required: [success, message, data]
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        message:
+          type: string
+        data:
+          $ref: "#/components/schemas/AuthTokenData"
+    AuthTokenData:
+      type: object
+      properties:
+        accessToken:
+          type: string
+        refreshToken:
+          type: string
+        expiresIn:
+          type: integer
+        mfaRequired:
+          type: boolean
+
+    UserContextResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        message:
+          type: string
+        data:
+          $ref: "#/components/schemas/UserContext"
+    UserContext:
+      type: object
+      properties:
+        userId:
+          type: string
+          format: uuid
+        tenantId:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        roles:
+          type: array
+          items:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        locale:
+          type: string
+        attributes:
+          type: object
+          additionalProperties: true
+
+    Role:
+      type: object
+      properties:
+        roleId:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        isSystem:
+          type: boolean
+        permissions:
+          type: array
+          items:
+            type: string
+    RoleRequest:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+    RolePermissionsRequest:
+      type: object
+      required: [permissionKeys]
+      properties:
+        permissionKeys:
+          type: array
+          items:
+            type: string
+    RoleResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        message:
+          type: string
+        data:
+          $ref: "#/components/schemas/Role"
+    RoleListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        message:
+          type: string
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/Role"
+            page:
+              $ref: "#/components/schemas/PageMeta"
+
+    TenantContextResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        message:
+          type: string
+        data:
+          $ref: "#/components/schemas/TenantContext"
+    TenantContext:
+      type: object
+      properties:
+        tenantId:
+          type: string
+          format: uuid
+        code:
+          type: string
+        name:
+          type: string
+        status:
+          type: string
+        region:
+          type: string
+        branding:
+          type: object
+          additionalProperties: true
+        features:
+          type: array
+          items:
+            $ref: "#/components/schemas/FeatureFlag"
+        providerSummary:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProviderHealth"
+    Tenant:
+      type: object
+      properties:
+        tenantId:
+          type: string
+          format: uuid
+        code:
+          type: string
+        name:
+          type: string
+        status:
+          type: string
+        region:
+          type: string
+        placementType:
+          type: string
+          enum: [Pooled, Dedicated]
+    TenantResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        message:
+          type: string
+        data:
+          $ref: "#/components/schemas/Tenant"
+    TenantUpdateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        status:
+          type: string
+        locale:
+          type: string
+        reason:
+          type: string
+    FeatureFlag:
+      type: object
+      properties:
+        featureKey:
+          type: string
+        enabled:
+          type: boolean
+        entitlement:
+          type: object
+          additionalProperties: true
+    FeatureFlagListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        message:
+          type: string
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/FeatureFlag"
+    FeatureFlagUpdateRequest:
+      type: object
+      required: [enabled]
+      properties:
+        enabled:
+          type: boolean
+        entitlement:
+          type: object
+          additionalProperties: true
+        reason:
+          type: string
+    FeatureFlagResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        message:
+          type: string
+        data:
+          $ref: "#/components/schemas/FeatureFlag"
+
+    TenantBranding:
+      type: object
+      properties:
+        logoUrl:
+          type: string
+          nullable: true
+        themeJson:
+          type: object
+          additionalProperties: true
+        customDomain:
+          type: string
+          nullable: true
+        emailFromDomain:
+          type: string
+          nullable: true
+        dkimVerified:
+          type: boolean
+    TenantBrandingRequest:
+      type: object
+      properties:
+        logoUrl:
+          type: string
+          nullable: true
+        themeJson:
+          type: object
+          additionalProperties: true
+        customDomain:
+          type: string
+          nullable: true
+        emailFromDomain:
+          type: string
+          nullable: true
+        reason:
+          type: string
+    TenantBrandingResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        message:
+          type: string
+        data:
+          $ref: "#/components/schemas/TenantBranding"
+    TenantConfigVersion:
+      type: object
+      properties:
+        version:
+          type: integer
+        environment:
+          type: string
+          enum: [Sandbox, Prod]
+        snapshotRef:
+          type: string
+        promotedBy:
+          type: string
+          format: uuid
+          nullable: true
+        promotedDate:
+          type: string
+          format: date-time
+          nullable: true
+    TenantConfigVersionListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        message:
+          type: string
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/TenantConfigVersion"
+    TenantConfigPromotionRequest:
+      type: object
+      required: [sourceEnvironment, targetEnvironment, sourceVersion, reason]
+      properties:
+        sourceEnvironment:
+          type: string
+          enum: [Sandbox]
+        targetEnvironment:
+          type: string
+          enum: [Prod]
+        sourceVersion:
+          type: integer
+        reason:
+          type: string
+    TenantConfigPromotionResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        message:
+          type: string
+        data:
+          $ref: "#/components/schemas/TenantConfigVersion"
+
+    EmployeeSummary:
+      type: object
+      properties:
+        employeeId:
+          type: string
+          format: uuid
+        employeeNumber:
+          type: string
+        displayName:
+          type: string
+        designation:
+          type: string
+          nullable: true
+        department:
+          type: string
+          nullable: true
+        managerName:
+          type: string
+          nullable: true
+        status:
+          type: string
+    Employee:
+      allOf:
+        - $ref: "#/components/schemas/EmployeeSummary"
+        - type: object
+          properties:
+            email:
+              type: string
+              format: email
+            effectiveFrom:
+              type: string
+              format: date
+            effectiveTo:
+              type: string
+              format: date
+              nullable: true
+            attributes:
+              type: object
+              additionalProperties: true
+    EmployeeCreateRequest:
+      type: object
+      required: [employeeNumber, firstName, lastName, effectiveFrom]
+      properties:
+        employeeNumber:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        effectiveFrom:
+          type: string
+          format: date
+        assignment:
+          type: object
+          additionalProperties: true
+    EmployeeUpdateRequest:
+      type: object
+      required: [effectiveFrom, changes, reason]
+      properties:
+        effectiveFrom:
+          type: string
+          format: date
+        changes:
+          type: object
+          additionalProperties: true
+        reason:
+          type: string
+    EmployeeResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        message:
+          type: string
+        data:
+          $ref: "#/components/schemas/Employee"
+    EmployeeListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        message:
+          type: string
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/EmployeeSummary"
+            page:
+              $ref: "#/components/schemas/PageMeta"
+    OrgNode:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        type:
+          type: string
+        count:
+          type: integer
+        children:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrgNode"
+    OrgChartResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        message:
+          type: string
+        data:
+          $ref: "#/components/schemas/OrgNode"
+
+    LeaveBalance:
+      type: object
+      properties:
+        type:
+          type: string
+        available:
+          type: number
+        accrued:
+          type: number
+        used:
+          type: number
+    LeaveBalanceListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        message:
+          type: string
+        data:
+          type: object
+          properties:
+            balances:
+              type: array
+              items:
+                $ref: "#/components/schemas/LeaveBalance"
+    LeaveType:
+      type: object
+      properties:
+        leaveTypeId:
+          type: string
+          format: uuid
+        code:
+          type: string
+        name:
+          type: string
+        ruleSetKey:
+          type: string
+          nullable: true
+    LeaveTypeListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        message:
+          type: string
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/LeaveType"
+    LeaveRequest:
+      type: object
+      properties:
+        requestId:
+          type: string
+          format: uuid
+        employeeId:
+          type: string
+          format: uuid
+        typeId:
+          type: string
+          format: uuid
+        from:
+          type: string
+          format: date
+        to:
+          type: string
+          format: date
+        days:
+          type: number
+        status:
+          type: string
+        workflowInstanceId:
+          type: string
+          format: uuid
+          nullable: true
+        approvalChain:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+    LeaveRequestCreateRequest:
+      type: object
+      required: [typeId, from, to, reason]
+      properties:
+        employeeId:
+          type: string
+          format: uuid
+          nullable: true
+        typeId:
+          type: string
+          format: uuid
+        from:
+          type: string
+          format: date
+        to:
+          type: string
+          format: date
+        halfDay:
+          type: boolean
+          default: false
+        reason:
+          type: string
+    LeaveRequestResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        message:
+          type: string
+        data:
+          $ref: "#/components/schemas/LeaveRequest"
+    LeaveRequestListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        message:
+          type: string
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/LeaveRequest"
+            page:
+              $ref: "#/components/schemas/PageMeta"
+
+    WorkflowTask:
+      type: object
+      properties:
+        taskId:
+          type: string
+          format: uuid
+        module:
+          type: string
+        subject:
+          type: string
+        requester:
+          type: string
+        step:
+          type: string
+        slaDueAt:
+          type: string
+          format: date-time
+          nullable: true
+        slaState:
+          type: string
+        onBehalfOf:
+          type: string
+          nullable: true
+    WorkflowTaskListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        message:
+          type: string
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/WorkflowTask"
+            page:
+              $ref: "#/components/schemas/PageMeta"
+    WorkflowDecisionRequest:
+      type: object
+      required: [decision]
+      properties:
+        decision:
+          type: string
+          enum: [Approve, Reject]
+        comment:
+          type: string
+          nullable: true
+        onBehalfOf:
+          type: string
+          format: uuid
+          nullable: true
+    WorkflowDecisionResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        message:
+          type: string
+        data:
+          type: object
+          properties:
+            taskId:
+              type: string
+              format: uuid
+            newState:
+              type: string
+            instanceStatus:
+              type: string
+    WorkflowDefinition:
+      type: object
+      properties:
+        definitionId:
+          type: string
+          format: uuid
+        key:
+          type: string
+        version:
+          type: integer
+        status:
+          type: string
+          enum: [Draft, Published, Retired]
+        jsonSpec:
+          type: object
+          additionalProperties: true
+    WorkflowDefinitionRequest:
+      type: object
+      required: [key, jsonSpec]
+      properties:
+        key:
+          type: string
+        jsonSpec:
+          type: object
+          additionalProperties: true
+        reason:
+          type: string
+    WorkflowDefinitionResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        message:
+          type: string
+        data:
+          $ref: "#/components/schemas/WorkflowDefinition"
+    WorkflowDefinitionListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        message:
+          type: string
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/WorkflowDefinition"
+    WorkflowInstanceResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        message:
+          type: string
+        data:
+          type: object
+          additionalProperties: true
+
+    RuleSet:
+      type: object
+      properties:
+        ruleSetId:
+          type: string
+          format: uuid
+        key:
+          type: string
+        version:
+          type: integer
+        status:
+          type: string
+          enum: [Draft, Published, Retired]
+        effectiveFrom:
+          type: string
+          format: date
+        effectiveTo:
+          type: string
+          format: date
+          nullable: true
+    RuleSetRequest:
+      type: object
+      required: [key, effectiveFrom, rules]
+      properties:
+        key:
+          type: string
+        effectiveFrom:
+          type: string
+          format: date
+        effectiveTo:
+          type: string
+          format: date
+          nullable: true
+        rules:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        reason:
+          type: string
+    RuleSetResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        message:
+          type: string
+        data:
+          $ref: "#/components/schemas/RuleSet"
+    RuleSetListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        message:
+          type: string
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/RuleSet"
+    RuleTestRequest:
+      type: object
+      required: [facts]
+      properties:
+        facts:
+          type: object
+          additionalProperties: true
+    RuleTestResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        message:
+          type: string
+        data:
+          type: object
+          properties:
+            matchedRules:
+              type: array
+              items:
+                type: string
+            outcome:
+              type: object
+              additionalProperties: true
+    ValidationResultResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        message:
+          type: string
+        data:
+          type: object
+          properties:
+            valid:
+              type: boolean
+            errors:
+              type: array
+              items:
+                $ref: "#/components/schemas/ErrorItem"
+
+    ProviderCategory:
+      type: string
+      description: Extensible provider category key resolved from the provider registry.
+      example: VectorStore
+    ProviderType:
+      type: object
+      properties:
+        key:
+          $ref: "#/components/schemas/ProviderCategory"
+        description:
+          type: string
+    Provider:
+      type: object
+      properties:
+        providerId:
+          type: string
+          format: uuid
+        type:
+          $ref: "#/components/schemas/ProviderCategory"
+        key:
+          type: string
+        displayName:
+          type: string
+        capabilities:
+          type: array
+          items:
+            type: string
+        status:
+          type: string
+          enum: [GA, Beta, Deprecated]
+    TenantProviderConfig:
+      type: object
+      properties:
+        tenantProviderConfigId:
+          type: string
+          format: uuid
+        type:
+          $ref: "#/components/schemas/ProviderCategory"
+        providerKey:
+          type: string
+        secretRef:
+          type: string
+          readOnly: true
+        isPrimary:
+          type: boolean
+        fallbackProviderKey:
+          type: string
+          nullable: true
+        enabled:
+          type: boolean
+        effectiveFrom:
+          type: string
+          format: date
+    TenantProviderConfigRequest:
+      type: object
+      required: [type, providerKey, config, enabled]
+      properties:
+        type:
+          $ref: "#/components/schemas/ProviderCategory"
+        providerKey:
+          type: string
+        config:
+          type: object
+          additionalProperties: true
+          description: Validated non-secret config. Raw secrets must not be persisted directly.
+        secretInput:
+          type: object
+          additionalProperties: true
+          writeOnly: true
+          description: Optional guided secret input. API stores it as a secret reference and never returns it.
+        isPrimary:
+          type: boolean
+          default: true
+        fallbackProviderKey:
+          type: string
+          nullable: true
+        enabled:
+          type: boolean
+        effectiveFrom:
+          type: string
+          format: date
+    ProviderHealth:
+      type: object
+      properties:
+        type:
+          $ref: "#/components/schemas/ProviderCategory"
+        providerKey:
+          type: string
+        status:
+          type: string
+          enum: [Healthy, Degraded, Down, Unknown]
+        latencyMs:
+          type: integer
+          nullable: true
+        lastCheckedAt:
+          type: string
+          format: date-time
+          nullable: true
+        lastError:
+          type: string
+          nullable: true
+    ProviderTypeListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        message:
+          type: string
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/ProviderType"
+    ProviderListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        message:
+          type: string
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/Provider"
+    TenantProviderConfigResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        message:
+          type: string
+        data:
+          $ref: "#/components/schemas/TenantProviderConfig"
+    TenantProviderConfigListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        message:
+          type: string
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/TenantProviderConfig"
+    ProviderHealthListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        message:
+          type: string
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/ProviderHealth"
+    ProviderTestResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        message:
+          type: string
+        data:
+          type: object
+          properties:
+            passed:
+              type: boolean
+            latencyMs:
+              type: integer
+              nullable: true
+            details:
+              type: object
+              additionalProperties: true
+
+    SearchResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        message:
+          type: string
+        data:
+          type: object
+          properties:
+            groups:
+              type: array
+              items:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  items:
+                    type: array
+                    items:
+                      type: object
+                      additionalProperties: true
+    Notification:
+      type: object
+      properties:
+        notificationId:
+          type: string
+          format: uuid
+        category:
+          type: string
+        title:
+          type: string
+        message:
+          type: string
+        status:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+    NotificationResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        message:
+          type: string
+        data:
+          $ref: "#/components/schemas/Notification"
+    NotificationListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        message:
+          type: string
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/Notification"
+            page:
+              $ref: "#/components/schemas/PageMeta"
+    SnoozeNotificationRequest:
+      type: object
+      required: [snoozeUntil]
+      properties:
+        snoozeUntil:
+          type: string
+          format: date-time
+
+    AuditChange:
+      type: object
+      properties:
+        changeLogId:
+          type: string
+        entityType:
+          type: string
+        entityId:
+          type: string
+        action:
+          type: string
+        fieldName:
+          type: string
+        oldValue:
+          type: string
+          nullable: true
+        newValue:
+          type: string
+          nullable: true
+        reason:
+          type: string
+          nullable: true
+        actorId:
+          type: string
+          format: uuid
+        onBehalfOfId:
+          type: string
+          format: uuid
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+    AuditChangeListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        message:
+          type: string
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/AuditChange"
+            page:
+              $ref: "#/components/schemas/PageMeta"
+
+    ReasonRequest:
+      type: object
+      properties:
+        reason:
+          type: string
