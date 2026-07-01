@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    SharedKernel: framework-agnostic domain primitives shared by every module.
+    No dependency on infrastructure, EF, ASP.NET, or any specific module.
+  -->
+  <PropertyGroup>
+    <RootNamespace>HRMS.SharedKernel</RootNamespace>
+    <AssemblyName>HRMS.SharedKernel</AssemblyName>
+  </PropertyGroup>
+
+</Project>

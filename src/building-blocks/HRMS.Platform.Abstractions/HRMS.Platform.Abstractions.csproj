@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Platform.Abstractions: cross-cutting platform seams (tenant context, event bus,
+    clock, provider interfaces). Modules depend on these abstractions, never on concrete
+    infrastructure. This is what keeps module boundaries microservice-ready (ADR-004).
+  -->
+  <PropertyGroup>
+    <RootNamespace>HRMS.Platform.Abstractions</RootNamespace>
+    <AssemblyName>HRMS.Platform.Abstractions</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\HRMS.SharedKernel\HRMS.SharedKernel.csproj" />
+  </ItemGroup>
+
+</Project>
