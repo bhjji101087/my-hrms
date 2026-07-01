@@ -211,6 +211,10 @@ All code work follows `docs/20-standards/BRANCHING_AND_COMMIT_RULES.md`:
   (`Closes #<issue#>`).
 * `development` is promoted to `main` via PR after each Feature is completed.
 * Local SQL Server is used for the database; Docker runs RabbitMQ, Redis, and Qdrant only.
+* Track work on the GitHub Project board: before coding, set the Task, US, Feature, and
+  Epic to **In Progress**; on PR merge set the US and Tasks **Done** and record its
+  Estimate (h), Actual (h), and Story Points (Fibonacci). Roll up Feature → Epic →
+  Milestone to Done only when all children are Done. See the rules file for detail.
 
 ## Read-on-demand standards (do NOT preload — read the relevant one when the task touches that area)
 

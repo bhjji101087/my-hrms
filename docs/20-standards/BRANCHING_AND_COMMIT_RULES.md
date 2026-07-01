@@ -70,7 +70,34 @@ For each User Story:
   approval before merge (see repo branch protection).
 - One PR corresponds to one User Story.
 
-## 6. Merge to main
+## 6. Work status, estimation & rollup (GitHub Project board)
+
+Status, hours, and story points are tracked on the **GitHub Project (v2) board** using
+custom fields (native GitHub issues only have open/closed, so the board is mandatory for
+this rule).
+
+**Board fields:**
+- `Status` (single-select): `Todo` → `In Progress` → `Done`.
+- `Estimate (h)` (number) — on **User Stories**.
+- `Actual (h)` (number) — on **User Stories**.
+- `Story Points` (single-select, Fibonacci): `1, 2, 3, 5, 8, 13` — on **User Stories**.
+- Tasks remain checklist items inside their User Story (no separate fields).
+
+**On starting work** (before writing any code for it):
+- Mark the **Task**, its **User Story**, the parent **Feature**, and the parent **Epic**
+  as **In Progress**.
+
+**On completion:**
+- When a US's PR is **approved and merged** into `development`:
+  - Mark the **User Story** `Done` and tick all its **Tasks** done.
+  - Record the US's **Estimate (h)**, **Actual (h)**, and **Story Points**.
+- When **all User Stories of a Feature are Done** → mark the **Feature** `Done`.
+- When **all Features of an Epic are Done** → mark the **Epic** `Done`.
+- When **all Epics of a Milestone are Done** → mark the **Milestone Done** (close it).
+
+Rollup is bottom-up: a parent is never marked Done before all its children are Done.
+
+## 7. Merge to main
 
 - `development` is merged into `main` **after each Feature is completed** — i.e. once all
   User Stories under a Feature are merged into `development` and the Feature is done,
