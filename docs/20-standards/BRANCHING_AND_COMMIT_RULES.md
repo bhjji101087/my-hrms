@@ -69,9 +69,9 @@ For each User Story:
 - PR must pass CI (build + tests + architecture-boundary tests) and get the required
   approval before merge (see repo branch protection).
 - One PR corresponds to one User Story.
-- **PR review and merge are performed by the human owner only.** The AI never approves,
-  reviews-to-approve, or merges a PR. The AI opens the PR, ensures CI is green, and hands
-  it to the owner; the owner reviews, approves, and merges.
+- **PR review, approval, and merge are performed by the human owner only.** The AI never
+  approves, reviews-to-approve, or merges a PR. The AI opens the PR, ensures CI is green,
+  and hands it to the owner; the owner reviews, approves, and merges.
 
 ## 6. Work status, estimation & rollup (GitHub Project board)
 
