@@ -10,6 +10,12 @@
     <AssemblyName>HRMS.Platform.Abstractions</AssemblyName>
   </PropertyGroup>
 
+  <!-- IModule composes ASP.NET Core services/endpoints, so the abstractions library
+       references the shared framework. This keeps the module-composition seam in one place. -->
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\HRMS.SharedKernel\HRMS.SharedKernel.csproj" />
   </ItemGroup>
