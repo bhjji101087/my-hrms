@@ -215,6 +215,8 @@ All code work follows `docs/20-standards/BRANCHING_AND_COMMIT_RULES.md`:
   Epic to **In Progress**; on PR merge set the US and Tasks **Done** and record its
   Estimate (h), Actual (h), and Story Points (Fibonacci). Roll up Feature → Epic →
   Milestone to Done only when all children are Done. See the rules file for detail.
+* **PR review, approval, and merge are the human owner's job only — never the AI's.** The
+  AI opens the PR and gets CI green, then hands it to the owner.
 
 ## Read-on-demand standards (do NOT preload — read the relevant one when the task touches that area)
 

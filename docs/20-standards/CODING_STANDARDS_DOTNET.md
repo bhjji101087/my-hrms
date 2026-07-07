@@ -4,7 +4,8 @@
 
 Target Framework
 
-.NET Latest LTS
+.NET 10 (current LTS). Pinned via `src/global.json` and `src/Directory.Build.props`
+(`net10.0`). NuGet packages are kept at their latest stable versions.
 
 ---
 
