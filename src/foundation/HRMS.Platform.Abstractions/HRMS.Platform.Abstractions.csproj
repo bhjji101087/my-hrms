@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Platform.Abstractions: cross-cutting platform seams (tenant context, event bus,
+    clock, provider interfaces). Modules depend on these abstractions, never on concrete
+    infrastructure. This is what keeps module boundaries microservice-ready (ADR-004).
+  -->
+  <PropertyGroup>
+    <RootNamespace>HRMS.Platform.Abstractions</RootNamespace>
+    <AssemblyName>HRMS.Platform.Abstractions</AssemblyName>
+  </PropertyGroup>
+
+  <!-- IModule composes ASP.NET Core services/endpoints, so the abstractions library
+       references the shared framework. This keeps the module-composition seam in one place. -->
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\HRMS.SharedKernel\HRMS.SharedKernel.csproj" />
+  </ItemGroup>
+
+</Project>

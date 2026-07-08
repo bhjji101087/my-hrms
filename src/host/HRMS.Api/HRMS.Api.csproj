@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <!--
+    HRMS.Api: the single deployable host for the Modular Monolith. It composes each
+    module's IModule (services + endpoints) at startup. Business modules are added as
+    project references here as they are built; the host never touches module internals.
+  -->
+  <PropertyGroup>
+    <RootNamespace>HRMS.Api</RootNamespace>
+    <AssemblyName>HRMS.Api</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="10.2.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\foundation\HRMS.Platform.Abstractions\HRMS.Platform.Abstractions.csproj" />
+    <ProjectReference Include="..\..\foundation\HRMS.Platform.Infrastructure\HRMS.Platform.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>

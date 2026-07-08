@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Platform.Infrastructure: shared infrastructure implementations of the platform
+    abstractions (clock, and later: EF base context, tenant interceptors, outbox,
+    RabbitMQ/Redis adapters). Modules do NOT reference this directly for their domain;
+    it is composed at the host.
+  -->
+  <PropertyGroup>
+    <RootNamespace>HRMS.Platform.Infrastructure</RootNamespace>
+    <AssemblyName>HRMS.Platform.Infrastructure</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\HRMS.SharedKernel\HRMS.SharedKernel.csproj" />
+    <ProjectReference Include="..\HRMS.Platform.Abstractions\HRMS.Platform.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>

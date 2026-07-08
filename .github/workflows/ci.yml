@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main, development]
+  push:
+    branches: [main, development]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build & Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restore
+        working-directory: src
+        run: dotnet restore HRMS.sln
+
+      - name: Build
+        working-directory: src
+        run: dotnet build HRMS.sln --configuration Release --no-restore
+
+      - name: Test
+        working-directory: src
+        run: dotnet test HRMS.sln --configuration Release --no-build --verbosity normal

@@ -1,0 +1,23 @@
+<Project>
+
+  <!--
+    Shared build settings for every project in the HRMS solution.
+    Enterprise Modular Monolith — see docs/16-decisions/ADR-004-modular-monolith.md
+    and docs/20-standards/CODING_STANDARDS_DOTNET.md.
+  -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+
+    <!-- Quality gates: treat warnings as errors, enforce analyzers. -->
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <AnalysisLevel>latest-recommended</AnalysisLevel>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+
+</Project>
