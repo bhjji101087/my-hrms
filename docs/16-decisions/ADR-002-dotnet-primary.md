@@ -34,8 +34,8 @@ Risks: integration complexity between runtimes; mitigated by event-driven bounda
 
 # Impact
 
-Architecture: clear core (.NET) vs. edge (Node) split. Database: EF Core migrations.
-Security: unified JWT/tenant validation across both. Development: two toolchains.
+Architecture: clear core (.NET) vs. edge (Node) split. Database: DbUp SQL-script migrations
+(see ADR-037). Security: unified JWT/tenant validation across both. Development: two toolchains.
 
 # Approval
 

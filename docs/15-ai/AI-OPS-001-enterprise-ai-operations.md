@@ -403,7 +403,7 @@ hash. Direct alias changes are prohibited.
 
 ## 12.2 Database and data-store change
 
-- SQL changes use reviewed EF Core migrations and rollback/forward-fix plan.
+- SQL changes use reviewed DbUp SQL-script migrations (ADR-037) and rollback/forward-fix plan.
 - Qdrant indexes use shadow build, validation, alias/placement switch, rollback window, and
   retirement; no in-place unvalidated mutation.
 - Redis entry/index schema changes use namespace/version migration and safe miss behavior.

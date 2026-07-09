@@ -18,7 +18,7 @@ Status: Approved
 # 1. Purpose
 
 This document defines the implementation design for tenant resolution, tenant catalog
-access, shard/placement routing, EF Core global query filters, SQL Server RLS enforcement,
+access, shard/placement routing, repository-injected tenant predicates (ADR-037), SQL Server RLS enforcement,
 tenant lifecycle operations, and tenant-aware infrastructure namespaces.
 
 The design implements approved ADR-005, ADR-006, DB-DESIGN-TENANT-001, and
@@ -38,7 +38,7 @@ flowchart LR
   Context --> Entitlements["Entitlement Service"]
   Context --> Connection["Tenant Connection Factory"]
   Connection --> Session["sp_set_session_context TenantId"]
-  Session --> Ef["Tenant-aware DbContext + EF filters"]
+  Session --> Ef["Dapper RepositoryBase + injected tenant predicate"]
   Ef --> Sql["SQL Server RLS filter + block predicates"]
   Context --> Cache["Tenant-namespaced cache/search/storage/events"]
 ```
@@ -58,7 +58,7 @@ the tenant context has been resolved, authorized, and applied to the database co
 | `ITenantContext` | Immutable request-scoped tenant object containing tenant ID, code, status, region, shard, placement, and entitlements. |
 | `TenantConnectionFactory` | Resolves the physical connection and sets SQL session context before any query. |
 | `TenantDbConnectionInterceptor` | Enforces session-context setup and validates current tenant context on opened connections. |
-| `TenantAwareDbContext` | Applies EF global query filters and tenant write stamping. |
+| `RepositoryBase` / `ISqlBuilder` | Applies the injected tenant + soft-delete predicate and tenant write stamping (ADR-037). |
 | `TenantEntitySaveChangesInterceptor` | Injects `TenantId` on writes and blocks mismatched tenant writes before database call. |
 | `EntitlementService` | Evaluates tenant feature/module flags for API, UI, job, report, event, and integration access. |
 | `TenantLifecycleService` | Manages provision, activate, suspend, offboard, export, purge initiation, and placement change workflow. |
@@ -108,7 +108,7 @@ Failure behavior:
 6. Request-scoped `ITenantContext` is created and made immutable.
 7. Application service executes.
 8. Data access opens tenant-scoped connection and sets `SESSION_CONTEXT('TenantId')`.
-9. EF filters and SQL Server RLS apply.
+9. The repository-injected tenant predicate and SQL Server RLS apply.
 10. Audit and telemetry include tenant context.
 
 No application service may access tenant-scoped repositories without `ITenantContext`.
@@ -132,40 +132,48 @@ The connection factory must:
 Guidance:
 
 - Do not set session context from client input.
-- Do not rely only on EF filters.
+- Do not rely only on the app-layer predicate; RLS is the backstop.
 - Do not run tenant-scoped SQL before session context is set.
 - Do not use raw SQL paths except through reviewed repository methods that preserve tenant
   context.
 
 ---
 
-# 7. EF Core Global Query Filters
+# 7. Repository-Injected Tenant Predicate (Dapper)
 
-Every tenant-scoped entity must implement a tenant marker interface such as:
+> Per **ADR-037**, the app-layer tenant filter is enforced by a central Dapper
+> `RepositoryBase`/SQL-builder, not an EF Core global query filter. RLS (§8) remains the
+> database-level backstop; the outcomes below are unchanged.
+
+Every tenant-scoped entity implements the tenant marker interface:
 
 ```csharp
 public interface ITenantScopedEntity
 {
-    Guid TenantId { get; set; }
+    Guid TenantId { get; }
 }
 ```
 
-The DbContext model configuration must apply tenant filtering consistently:
+The `RepositoryBase`/`ISqlBuilder` must apply tenant + soft-delete filtering consistently to
+every tenant-scoped query. Conceptually the generated `WHERE` always begins with:
 
-```csharp
-modelBuilder.Entity<TEntity>()
-    .HasQueryFilter(e => !e.IsDeleted && e.TenantId == _tenantContext.TenantId);
+```sql
+WHERE [TenantId] = @__tenantId AND [IsDeleted] = 0
 ```
+
+where `@__tenantId` is bound from `ITenantContext` (never a caller parameter), and any
+developer-supplied filter is `AND`-appended afterwards.
 
 Rules:
 
-- Filters apply to tenant-scoped root entities.
-- Soft delete and tenant filters must be combined safely for the EF version in use.
-- Use of `IgnoreQueryFilters` is prohibited in normal product code.
-- Any exception requires an explicit cross-tenant platform operation, security review, and
+- The mandatory predicates apply to all tenant-scoped root entities and are emitted by the
+  builder, not by the caller — there is no per-query developer discretion.
+- Soft-delete and tenant predicates are always combined.
+- There is no supported API to build a tenant-scoped query without the tenant predicate.
+- Any cross-tenant platform operation requires an explicit, reviewed path, security review, and
   audit event.
-- Required-navigation behavior must be reviewed so filters do not produce confusing or
-  unsafe results.
+- Only `HRMS.Platform.Data` may issue Dapper/raw SQL; an architecture test enforces this so the
+  repository base is the only way to build tenant-scoped SQL.
 
 ---
 
@@ -411,9 +419,9 @@ Required endpoint groups:
 | TECH-TENANT-AC-001 | Request pipeline creates immutable server-side `ITenantContext` before application services execute. |
 | TECH-TENANT-AC-002 | Tenant context can be resolved from validated token/host mapping but is never trusted from request body. |
 | TECH-TENANT-AC-003 | Connection factory sets SQL session context on every tenant-scoped connection before first query. |
-| TECH-TENANT-AC-004 | EF global query filters apply to all tenant-scoped entities. |
+| TECH-TENANT-AC-004 | The repository-injected tenant predicate applies to all tenant-scoped entities; no supported API builds a tenant-scoped query without it (ADR-037). |
 | TECH-TENANT-AC-005 | SQL RLS filter and block predicates protect every tenant-scoped table. |
-| TECH-TENANT-AC-006 | Raw SQL, `IgnoreQueryFilters`, and platform cross-tenant paths are blocked or explicitly audited exceptions. |
+| TECH-TENANT-AC-006 | Raw SQL outside `HRMS.Platform.Data`, any predicate-bypass, and platform cross-tenant paths are blocked (architecture test) or explicitly audited exceptions. |
 | TECH-TENANT-AC-007 | Suspended tenant status blocks user APIs, jobs, integrations, reports, AI, and tenant-scoped workflows. |
 | TECH-TENANT-AC-008 | Tenant placement changes route through catalog without application code change. |
 | TECH-TENANT-AC-009 | Entitlements are enforced across API, UI, jobs, reports, integrations, and events. |

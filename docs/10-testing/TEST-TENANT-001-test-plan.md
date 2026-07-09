@@ -33,7 +33,7 @@ In scope:
 - Tenant placement and shard routing.
 - SQL Server RLS filter predicates.
 - SQL Server RLS block predicates.
-- EF Core global query filters.
+- Repository-injected tenant predicate (ADR-037).
 - Tenant-aware write stamping.
 - Tenant entitlements and feature flags.
 - Tenant suspension, activation, offboarding, and placement change.
@@ -159,11 +159,12 @@ RLS write isolation:
 - `Delete_OtherTenantRow_FilterPredicatePreventsAccess`
 - `BulkInsert_MismatchedTenantId_RejectedOrQuarantined`
 
-EF filters:
+Repository predicate (ADR-037):
 
-- `EfQuery_DefaultQuery_AppliesTenantAndSoftDeleteFilters`
-- `EfQuery_RequiredNavigation_DoesNotBypassTenantIsolation`
-- `EfQuery_IgnoreQueryFilters_NotAllowedInProductRepository`
+- `RepositoryQuery_DefaultQuery_AppliesTenantAndSoftDeletePredicates`
+- `RepositoryQuery_DeveloperFilter_DoesNotBypassTenantIsolation`
+- `RepositoryQuery_NoApiCanBuildTenantScopedQueryWithoutTenantPredicate`
+- `ArchitectureTest_OnlyPlatformDataMayIssueRawSql`
 
 Catalog:
 
@@ -307,7 +308,7 @@ Required:
 Automation layers:
 
 - Unit tests: resolver, entitlement, connection factory, write stamping.
-- Integration tests: SQL Server RLS, EF filters, catalog lifecycle.
+- Integration tests: SQL Server RLS, repository tenant predicate, catalog lifecycle.
 - API tests: OpenAPI contract, authz, validation, idempotency.
 - UI tests: Playwright for tenant administration.
 - Security tests: tenant tampering and BOLA scenarios.

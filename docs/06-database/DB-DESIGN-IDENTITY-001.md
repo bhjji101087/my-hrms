@@ -626,7 +626,7 @@ Minimum expectations:
 
 ## 12. Migration Notes
 
-Implementation must use EF Core migrations only.
+Implementation must use DbUp SQL-script migrations only (ADR-037).
 
 Migration order:
 
