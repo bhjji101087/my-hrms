@@ -19,9 +19,10 @@ per-tenant restore and residency, and does not require a rewrite as we grow from
 
 Adopt a **hybrid pooled model with a tenant catalog**:
 
-1. **Default:** shared database, shared schema, `TenantId` on every table, enforced by an
-   **EF Core global query filter** *and* **SQL Server Row-Level Security (RLS)** as
-   defense-in-depth (a missing code filter must still be blocked at the DB).
+1. **Default:** shared database, shared schema, `TenantId` on every table, enforced by a
+   **repository-injected tenant predicate** (central `RepositoryBase`/SQL-builder; see ADR-037)
+   *and* **SQL Server Row-Level Security (RLS)** as defense-in-depth (a missing code filter must
+   still be blocked at the DB).
 2. **Sharding by pools:** many tenants per DB, multiple DBs (shards). A **catalog DB** maps
    `Tenant → shard / region / entitlements`; the connection is resolved per request.
 3. **Tiered placement:** premium / regulated / residency-bound tenants are placed in a

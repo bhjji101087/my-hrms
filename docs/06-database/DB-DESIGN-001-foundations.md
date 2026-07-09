@@ -30,7 +30,7 @@ code change.
   `ModifiedBy`, `ModifiedDate`, `IsDeleted`, `VersionNumber`.
 - **Soft delete** (`IsDeleted`), never physical delete of business data.
 - **Mandatory index on `TenantId`**; PK/FK indexed; parameterized queries only.
-- **EF Core migrations only.** No manual prod schema changes.
+- **DbUp SQL-script migrations only** (ADR-037). No manual prod schema changes.
 - **RLS** (ADR-005) on every tenant-scoped table as defense-in-depth.
 
 > The **catalog** database is the only thing NOT tenant-scoped (it *defines* tenants).

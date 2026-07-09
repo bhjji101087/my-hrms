@@ -203,8 +203,9 @@ full Feature Spec (`docs/19-templates/FEATURE_REQUIREMENTS_TEMPLATE.md`) before 
 ### FR-015 — Tenant Catalog + Row-Level Security ⭐ foundation
 - **Priority:** Must
 - **Description:** A tenant catalog maps each tenant to its placement (pool/shard, region)
-  and entitlements; all data access flows through a tenant-context resolver with EF Core
-  global filter **and** SQL Server Row-Level Security as defense-in-depth. Enables future
+  and entitlements; all data access flows through a tenant-context resolver with a
+  repository-injected tenant predicate (ADR-037) **and** SQL Server Row-Level Security as
+  defense-in-depth. Enables future
   dedicated-DB / data-residency placement without code change. See ARCH-REVIEW-001 §4;
   model in ADR-005. Includes explicit Branch / Office Hierarchy and Scoped Administration
   inside a tenant. (Extends FR-001.)

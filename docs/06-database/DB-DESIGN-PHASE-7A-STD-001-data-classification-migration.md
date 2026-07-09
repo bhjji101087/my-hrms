@@ -37,7 +37,7 @@ Audit Required: Yes / No
 
 Every Phase 7A database change must include:
 
-- EF Core migration name and purpose.
+- DbUp migration script name and purpose (ADR-037).
 - Forward migration approach.
 - Backfill rules and data defaulting.
 - Zero-downtime deployment concern.

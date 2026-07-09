@@ -23,8 +23,11 @@ A single, mandatory **tenant-context pipeline**:
    The client never supplies a trusted TenantId.
 2. **Resolve the shard/connection** from the catalog map (ADR-005); open the connection
    and set **`SESSION_CONTEXT('TenantId')`** so SQL Server **RLS** filters at the DB.
-3. **EF Core global query filter** on `TenantId` for all tenant-scoped entities (app-layer
-   belt to the DB-layer suspenders).
+3. **Repository-injected tenant predicate** on `TenantId` for all tenant-scoped entities
+   (app-layer belt to the DB-layer suspenders). The mechanism is a central
+   `RepositoryBase`/SQL-builder that always emits `TenantId = @__tenantId` (bound from
+   `ITenantContext`, never a caller parameter) plus `IsDeleted = 0` — no per-query developer
+   discretion. See **ADR-037** (supersedes the earlier "EF Core global query filter" wording).
 4. **Repository / Unit-of-Work** layer is the only data path; it injects `TenantId` on
    writes and forbids raw cross-tenant queries. Effective-dated entities default to
    "as-of today" (ADR-007).

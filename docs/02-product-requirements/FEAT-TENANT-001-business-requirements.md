@@ -31,7 +31,7 @@ The Tenant Catalog and Row-Level Security foundation must provide:
   entitlements, provider configuration, and branding references.
 - A server-side tenant-context pipeline that never trusts tenant IDs from request bodies.
 - SQL Server Row-Level Security (RLS) on every tenant-scoped table.
-- EF Core global query filters as application-layer defense in depth.
+- A repository-injected tenant predicate as application-layer defense in depth (ADR-037).
 - Tenant lifecycle controls for provisioning, activation, suspension, offboarding, export,
   purge, and placement change.
 - Audit, RBAC, ABAC, OpenAPI, and automated isolation proof for every tenant operation.
@@ -92,7 +92,7 @@ In scope:
 - Tenant branding and white-label domain references.
 - Tenant provider configuration references.
 - Branch/office hierarchy and branch/office scoped administration.
-- EF Core global tenant filters.
+- Repository-injected tenant predicate (ADR-037).
 - SQL Server RLS filter and block predicates.
 - Tenant-aware connection factory and session-context setup.
 - Tenant-aware background job execution.
@@ -261,10 +261,10 @@ and RLS controls.
   tenant, even when the host/domain appears tenant-specific.
 - Prevent broken object-level authorization by checking object ownership and tenant
   membership for every resource ID.
-- Use EF global query filters and SQL Server RLS together.
+- Use the repository-injected tenant predicate and SQL Server RLS together (ADR-037).
 - Use both RLS filter and block predicates.
 - Set SQL session context before the first query on every tenant-scoped connection.
-- Disable or tightly review APIs that bypass EF filters.
+- Disable or tightly review APIs that bypass the repository predicate.
 - Protect catalog mutation endpoints with elevated platform permissions.
 - Audit tenant lifecycle, placement, entitlement, provider, branding, and domain changes.
 - Monitor suspicious RLS policy changes and tenant mapping anomalies.

@@ -138,7 +138,8 @@ Mandatory Index
 
 # Migration Standards
 
-EF Core Migrations Only
+Versioned SQL-script migrations (DbUp) only — forward-only, numbered scripts (see ADR-037,
+which supersedes the earlier "EF Core Migrations Only" standard).
 
 No manual production schema changes.
 

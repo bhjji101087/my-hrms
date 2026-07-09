@@ -36,7 +36,7 @@ Status: Approved (Bhajan Lal, 2026-06-18)
                     [ Application services (modular monolith) ]
                        │ RBAC+ABAC policy checks (deny-by-default)
                        ▼
-              [ Data access layer: EF global filter + RLS session ctx ]
+              [ Data access layer: injected tenant predicate + RLS session ctx ]
                        ▼
         [ SQL Server (RLS) | Provider Resolver | Redis (ns) | ES (per-tenant) | Blob | Key Vault ]
 ```
@@ -63,7 +63,7 @@ layer above blindly.
 
 Defense-in-depth (a single bug must not leak data):
 1. **Validated tenant context** from JWT/host — never client-supplied.
-2. **EF Core global query filter** on `TenantId` (app layer).
+2. **Repository-injected tenant predicate** on `TenantId` (app layer; central `RepositoryBase`/SQL-builder, ADR-037).
 3. **SQL Server Row-Level Security** bound to `SESSION_CONTEXT('TenantId')` (DB layer) —
    blocks even a query that forgot the filter.
 4. **Object-level authorization** — every entity fetch checks ownership (anti-IDOR).

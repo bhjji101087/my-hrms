@@ -15,8 +15,9 @@ and must be multi-tenant, auditable, performant, and scalable, with first-class
 
 # Decision
 
-Use **SQL Server** as the primary relational database, accessed via **EF Core
-migrations only**. Redis for caching, Elasticsearch for search, Azure Blob for
+Use **SQL Server** as the primary relational database. Schema changes are applied via
+**versioned SQL-script migrations (DbUp)** only — see ADR-037, which supersedes the earlier
+"EF Core migrations only" wording. Redis for caching, Elasticsearch for search, Azure Blob for
 storage — each for its specific role, not as a system of record.
 
 # Alternatives Considered
@@ -27,7 +28,7 @@ storage — each for its specific role, not as a system of record.
 
 # Consequences
 
-Positive: mature tooling, strong .NET/EF Core fit, partitioning and indexing maturity.
+Positive: mature tooling, strong .NET/Dapper fit, partitioning and indexing maturity.
 Negative: licensing cost. Risks: large-table growth; mitigated by indexing, partitioning,
 and archival standards in DATABASE_STANDARDS.md.
 
