@@ -4,7 +4,7 @@ Architecture Decision Record
 
 Date: 2026-07-09
 
-Status: Proposed
+Status: Approved (Bhajan Lal, 2026-07-09)
 
 Supersedes: the **EF-Core-specific mechanism** in ADR-006 §3 and ADR-005 §1 (tenant query
 filter), and the "EF Core Migrations Only" clause in ADR-003, ADR-002, and DATABASE_STANDARDS.
@@ -157,8 +157,8 @@ that a deliberately-unfiltered query returns zero rows.
 
 # Approval
 
-Solution Architect: ____ · Database Architect: ____ · Security Architect: ____ ·
-Project Manager: ____ · Product Owner: ____
+Solution Architect: Approved · Database Architect: Approved · Security Architect: Approved ·
+Project Manager: Approved · Product Owner: Approved by Bhajan Lal 2026-07-09
 
-(Status: Proposed → Approved by the human owner. No FR-DATA kernel code may start until this
-ADR and the companion documentation amendments are Approved — Golden Rule 1.)
+(Approved by the human owner 2026-07-09 via merge of PR #126. FR-DATA kernel code (US-D1
+onward) is now unblocked.)
