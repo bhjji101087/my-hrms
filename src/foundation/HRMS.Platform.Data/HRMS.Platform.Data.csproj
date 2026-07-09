@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    HRMS.Platform.Data — the one-time Dapper data-access kernel (ADR-037). It is the ONLY
+    project permitted to reference Dapper / Microsoft.Data.SqlClient; an architecture test
+    enforces that, so the repository base is the only way to build tenant-scoped SQL. Every
+    module depends on this kernel plus SharedKernel + Platform.Abstractions — never on an ORM.
+  -->
+  <PropertyGroup>
+    <RootNamespace>HRMS.Platform.Data</RootNamespace>
+    <AssemblyName>HRMS.Platform.Data</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Dapper" />
+    <PackageReference Include="Microsoft.Data.SqlClient" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\HRMS.SharedKernel\HRMS.SharedKernel.csproj" />
+    <ProjectReference Include="..\HRMS.Platform.Abstractions\HRMS.Platform.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>
