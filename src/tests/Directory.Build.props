@@ -1,0 +1,17 @@
+<Project>
+
+  <!-- Inherit the solution-wide settings (net10.0, nullable, warnings-as-errors). -->
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+
+  <!--
+    Test-project adjustments. Keep warnings-as-errors, but relax analyzer rules that are
+    inappropriate for test code (test method names use underscores by convention; test
+    fixtures are intentionally public; xUnit test classes need no XML docs). This keeps
+    production code strict while letting tests read naturally.
+  -->
+  <PropertyGroup>
+    <NoWarn>$(NoWarn);CA1707;CA1515;CA1861;CA1051</NoWarn>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+  </PropertyGroup>
+
+</Project>
