@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git check-ignore *)",
+      "Bash(curl -s \"https://api.nuget.org/v3-flatcontainer/sqlitepclraw.lib.e_sqlite3/index.json\")",
+      "Bash(python -c \"import sys,json; v=[x for x in json.load\\(sys.stdin\\)['versions'] if '-' not in x]; print\\(v[-6:]\\)\")",
+      "Bash(grep -l -i \"sqlite\" src/tests/HRMS.ArchitectureTests/obj/*.json)",
+      "Bash(grep -rl -i \"sqlite\" src/ --include=\"*.csproj\")",
+      "Bash(rm -rf src/tests/HRMS.ArchitectureTests/obj src/tests/HRMS.ArchitectureTests/bin)",
+      "Bash(grep -rl -i \"sqlite\" src/ --include=\"*.json\")",
+      "Bash(cd \"c:/Users/rskbsl260/.claude/my-hrms\" || exit 1 *)",
+      "Read(//c/Program Files/Microsoft Visual Studio/2022/**)",
+      "Read(//c/Program Files/dotnet/**)",
+      "Bash(\"/c/Program Files/dotnet/dotnet.exe\" build HRMS.sln --configuration Release)",
+      "Bash(\"/c/Program Files/dotnet/dotnet.exe\" test HRMS.sln --configuration Release --no-build)",
+      "Bash(rm -f src/foundation/HRMS.Platform.Infrastructure/ModuleDbContext.cs)",
+      "Bash(rm -f src/tests/HRMS.ArchitectureTests/SchemaPerModuleTests.cs)",
+      "Bash(grep -rl -i \"EntityFramework\" src/ --include=\"*.cs\" --include=\"*.csproj\")",
+      "Bash(python board_helpers.py status 7 \"Done\")"
+    ]
+  }
+}

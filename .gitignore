@@ -47,7 +47,7 @@ Desktop.ini
 
 # ---- Local scratch / backups (not part of the repo) ----
 .tmp/
-docs.zip
+*.zip
 
 # ---- Node (for future Node.js specialized services) ----
 node_modules/

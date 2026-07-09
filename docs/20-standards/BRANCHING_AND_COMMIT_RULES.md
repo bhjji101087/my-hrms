@@ -51,6 +51,14 @@ Examples:
   for that US. The repository is configured to allow **squash merge only**.
 - The squash commit message references the US issue (e.g. `Closes #15`).
 
+## 3a. Verify-before-commit
+
+- Before **every** commit that touches code, run `dotnet build` and `dotnet test` on the
+  solution locally and confirm **0 warnings / 0 errors** (warnings-as-errors) and all tests
+  green. Only then request commit approval.
+- The AI **asks the owner before each commit**. The build/test result is reported with the
+  request so the owner approves a known-green change.
+
 ## 4. Task / US completion rule
 
 For each User Story:
